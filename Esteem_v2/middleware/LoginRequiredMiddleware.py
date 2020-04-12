@@ -1,25 +1,39 @@
 import re
 
 from django.conf import settings
+from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
+from django.urls import resolve
 from django.utils.deprecation import MiddlewareMixin
-from django.utils.http import is_safe_url
 
-EXEMPT_URLS = [re.compile(settings.LOGIN_URL.lstrip('/'))]
-if hasattr(settings, 'LOGIN_EXEMPT_URLS'):
-    EXEMPT_URLS += [re.compile(url) for url in settings.LOGIN_EXEMPT_URLS]
+IGNORE_PATHS = [re.compile(settings.LOGIN_URL)]
+IGNORE_PATHS += [
+    re.compile(url)
+    for url in getattr(settings, 'LOGIN_REQUIRED_IGNORE_PATHS', [])
+]
+
+IGNORE_VIEW_NAMES = [
+    name
+    for name in getattr(settings, 'LOGIN_REQUIRED_IGNORE_VIEW_NAMES', [])
+]
 
 
 class LoginRequiredMiddleware(MiddlewareMixin):
-    def process_request(self, request):
-        assert hasattr(request, 'user'), "The Login Required Middleware"
-        if not request.user.is_authenticated:
-            path = request.path_info.lstrip('/')
-            if not any(m.match(path) for m in EXEMPT_URLS):
-                redirect_to = settings.LOGIN_URL
-                # 'next' variable to support redirection to attempted page after login
-                if len(path) > 0 and is_safe_url(
-                        url=request.path_info, allowed_hosts=request.get_host()):
-                    redirect_to = f"{settings.LOGIN_URL}?next={request.path_info}"
 
-                return HttpResponseRedirect(redirect_to)
+    def process_request(self, request):
+        assert hasattr(request, 'user'), (
+            'The LoginRequiredMiddleware requires authentication middleware '
+            'to be installed. Edit your MIDDLEWARE setting to insert before '
+            "'django.contrib.auth.middleware.AuthenticationMiddleware'."
+        )
+
+        path = request.path
+        if request.user.is_authenticated:
+            return
+
+        resolver = resolve(path)
+        views = ((name == resolver.view_name) for name in IGNORE_VIEW_NAMES)
+
+        if not any(views) and not any(url.match(path) for url in IGNORE_PATHS):
+            return redirect_to_login(path)

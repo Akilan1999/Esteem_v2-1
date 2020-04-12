@@ -113,7 +113,7 @@ class RoomPage(TemplateView):
 
         if 'change_status' in request.POST:
             values = request.POST['change_status'].split(',')
-            print("Old values befor pressing button", values)
+            print("Old values before pressing button", values)
             requests.get("http://127.0.0.1:5000/api/changestatus/" + values[1])
             plug_obj = Plugs.objects.get(ip_address=values[0], plug_name=values[1])
             print(plug_obj.status)

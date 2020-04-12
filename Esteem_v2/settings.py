@@ -48,7 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'Esteem_v2.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
+    #'Esteem_v2.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'Esteem_v2.urls'
@@ -149,11 +149,13 @@ DEFAULT_FROM_EMAIL = 'Esteem Power Solutions <noreply@esteem.com>'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
-LOGIN_URL = 'accounts/login/'
+LOGIN_URL = '/accounts/login/'
 
 
 # List of pages that can be accessed without being logged in
 
-LOGIN_EXEMPT_URLS = (
-    r'^accounts/$',
-)
+IGNORE_PATHS = [
+    r'^/accounts/$',
+]
+
+IGNORE_VIEW_NAMES = []
