@@ -1,75 +1,58 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-    {% load static %}
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Login</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendor/fonts/circular-std/style.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendor/fonts/fontawesome/css/fontawesome-all.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/libs/css/style.css' %}">
-    <style>
+{% extends 'base_template.html' %}
+{% block title %}Login{% endblock %}
+{% block style %}
     html,
     body {
-        height: 100%;
+    height: 100%;
     }
 
     body {
-        display: -ms-flexbox;
-        display: flex;
-        -ms-flex-align: center;
-        align-items: center;
-        padding-top: 40px;
-        padding-bottom: 40px;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
     }
-    </style>
-</head>
-
-<body>
-    <!-- ============================================================== -->
-    <!-- login page  -->
-    <!-- ============================================================== -->
-    <div class="splash-container">
-        <div class="card ">
-            <div class="card-header text-center"><a href="../index.html"><img class="logo-img" src="../assets/images/logo.png" alt="logo"></a><span class="splash-description">Please enter your user information.</span></div>
-            <div class="card-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        {{ form.username }}
-{#                        <input class="form-control form-control-lg" id="username" type="text" placeholder="Username" autocomplete="off">#}
+{% endblock %}
+{% block main %}
+    {% block content %}
+        <!-- ============================================================== -->
+        <!-- login page  -->
+        <!-- ============================================================== -->
+        <div class="splash-container">
+            <div class="card ">
+                {% load static %}
+                <div class="card-header text-center"><a href="/"><img class="logo-img"
+                                                                      src="{% static 'assets/images/logo.png' %}"
+                                                                      alt="logo"></a><span class="splash-description">Please enter your user information.</span>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% load widget_tweaks %}
+                        <div class="form-group">
+                            {{ form.username|add_class:"form-control form-control-lg" }}
+                            {#                        <input class="form-control form-control-lg" id="username" type="text" placeholder="Username" autocomplete="off">#}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password|add_class:"form-control form-control-lg" }}
+                            {#                        <input class="form-control form-control-lg" id="password" type="password" placeholder="Password">#}
+                        </div>
+                        <div class="form-group">
+                            <label class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox"><span class="custom-control-label">Remember Me</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
+                    </form>
+                </div>
+                <div class="card-footer bg-white p-0" align="center">
+                    <div class="card-footer-item card-footer-item-bordered">
+                        <a href="#" class="footer-link">Forgot Password</a>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control form-control-lg" id="password" type="password" placeholder="Password">
-                    </div>
-                    <div class="form-group">
-                        <label class="custom-control custom-checkbox">
-                            <input class="custom-control-input" type="checkbox"><span class="custom-control-label">Remember Me</span>
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
-                </form>
-            </div>
-            <div class="card-footer bg-white p-0  ">
-                <div class="card-footer-item card-footer-item-bordered">
-                    <a href="#" class="footer-link">Create An Account</a></div>
-                <div class="card-footer-item card-footer-item-bordered">
-                    <a href="#" class="footer-link">Forgot Password</a>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- end login page  -->
-    <!-- ============================================================== -->
-    <!-- Optional JavaScript -->
-    <script src="{% static 'assets/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
-    <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.js' %}"></script>
-</body>
-
-</html>
+    {% endblock %}
+{% endblock %}
