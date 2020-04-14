@@ -32,14 +32,16 @@
                         {% csrf_token %}
                         {% load widget_tweaks %}
                         <div class="form-group">
-                            {% render_field form.username|append_attr:"class:form-control form-control-lg" autocomplete="off" placeholder="Username" %}
+                            {{ form.username }}
                             </div>
                         <div class="form-group">
-                            {% render_field form.password|append_attr:"class:form-control form-control-lg" autocomplete="new-password" placeholder="Password" %}
+                            {{ form.password }}
                             </div>
                         <div class="form-group">
                             <label class="custom-control custom-checkbox">
-                                <input class="custom-control-input" type="checkbox"><span class="custom-control-label">Remember Me</span>
+{#                                <input class="custom-control-input" type="checkbox">#}
+                                {{ form.remember_me }}
+                                <span class="custom-control-label">Remember Me</span>
                             </label>
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
