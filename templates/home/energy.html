@@ -1,10 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base_template.html' %}
+{% block title %}Energy Generation Page{% endblock %}
+{% block content %}
+    <div class="panel-body">
+        <canvas id="bigDashboardChart"></canvas>
+    </div>
+    <div class="row">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-muted">Backup Mode</h3>
+                    <div>
+                        <h5>Uses power from unless battery charge 100% (Use only when frequent power cuts).  </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-muted">Self Powered</h3>
+                    <div>
+                        <h5>Uses power from unless battery charge 100% (Use only when frequent power cuts).  </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-muted">Only Grid</h3>
+                    <div>
+                        <h5>Uses power from unless battery charge 100% (Use only when frequent power cuts).  </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            <!-- /. metric -->
+            <!-- metric -->
 
-</body>
-</html>
+    <script>
+    var ctx = document.getElementById('bigDashboardChart').getContext('2d');
+
+    chartColor = "#FFFFFF";
+
+    var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#80b6f4');
+    gradientStroke.addColorStop(1, '#ff8000');
+
+    var gradientFill = ctx.createLinearGradient(0, 200, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ["1:00", "2:00", "5:00"],
+            datasets: [{
+                label: "Solar Panel KwH",
+                borderColor: '#fecf00',
+                pointBorderColor: '#fecf00',
+                pointBackgroundColor: "yellow",
+                pointHoverBackgroundColor: "yellow",
+                pointHoverBorderColor: chartColor,
+                pointBorderWidth: 1,
+                pointHoverRadius: 7,
+                pointHoverBorderWidth: 2,
+                pointRadius: 5,
+                fill: true,
+                backgroundColor: gradientFill,
+                borderWidth: 2,
+                data: [1, 7, 11] // Fill in data here
+            },
+            {
+                label: "Battery KwH",
+                borderColor: "green",
+                pointBorderColor: "green",
+                pointBackgroundColor: "green",
+                pointHoverBackgroundColor: "green",
+                pointHoverBorderColor: "green",
+                pointBorderWidth: 1,
+                pointHoverRadius: 7,
+                pointHoverBorderWidth: 2,
+                pointRadius: 5,
+                fill: true,
+                backgroundColor: gradientFill,
+                borderWidth: 2,
+                data: [8, 7, -2] // Fill in data here
+            },
+            {
+                label: "Grid KwH",
+                borderColor: "red",
+                pointBorderColor: "red",
+                pointBackgroundColor: "red",
+                pointHoverBackgroundColor: "red",
+                pointHoverBorderColor: "red",
+                pointBorderWidth: 1,
+                pointHoverRadius: 7,
+                pointHoverBorderWidth: 2,
+                pointRadius: 5,
+                fill: true,
+                backgroundColor: gradientFill,
+                borderWidth: 2,
+                data: [0, 0, 0] // Fill in data here
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    </script>
+
+{% endblock %}
+
