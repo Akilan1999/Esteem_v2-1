@@ -1,10 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base_template.html' %}
+{% block title %}Room Number{% endblock %}
+{% block breadcrumb %}Rooms{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="card">
+            <h5 class="card-header">Area Chart</h5>
+            <div class="card-body">
+                <div id="c3chart_area"><canvas id="EnergyChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-content">
+        {% if Plugs %}
+            <div class="row">
+                {% for plug in Plugs %}
+                    <div class="card mr-auto">
+                        <div class="card-header d-flex">
+                            <h4 class="mb-0">{{ plug.plug_name }}</h4>
+                            <div class="dropdown ml-auto">
 
-</body>
-</html>
+                                <a class="toolbar" href="#" role="button" id="dropdownMenuLink"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
+                                        class="more_vert md-18">&#xE87C;</i> </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="plug_no" value="{{ plug.plug_no }}"/>
+                                        <input type="submit" name="remove_device" value="Remove Device"
+                                               class="dropdown-item"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="energy_generation_{{ plug.plug_name }}"
+                                        class="energy_chartArea"></canvas>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <form method="POST">
+                                {% csrf_token %}
+                                {% if plug.status %}
+                                    <button type="submit" value="{{ plug.ip_address }},{{ plug.plug_name }}"
+                                            name="change_status" class="btn btn-outline-danger"> On
+                                    </button>
+                                {% else %}
+                                    <button type="submit" value="{{ plug.ip_address }},{{ plug.plug_name }}"
+                                            name="change_status" class="btn btn-danger"> Off
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card ">
+                <div class="card-body">
+                    <p>No devices detected in this room. Please add a device to continue.</p>
+                </div>
+            </div>
+            </div>
+        {% endif %}
+    </div>
+
+
+    <!-- ============================================================== -->
+    <!-- modal  -->
+    <!-- ============================================================== -->
+    <div class="modal fade" id="addDevice" tabindex="-1" role="dialog" aria-labelledby="addDeviceLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDeviceLabel">Add Device</h5>
+                    <a href="#" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </a>
+                </div>
+                {% if available_devices %}
+                    <div class="modal-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {% for device in available_devices %}
+                                {% csrf_token %}
+                                <input type="hidden" name="{{ device.0 }}_ip_address" value="{{ device.1 }}"/>
+                                <input type="submit" name="new_device" value="{{ device.0 }}"
+                                       class="btn btn-outline-secondary"/>
+                            {% endfor %}
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-secondary" data-dismiss="modal">Cancel</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
