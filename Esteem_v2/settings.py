@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'Home.apps.HomeConfig',
-    'widget_tweaks',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'Esteem_v2.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
+    #'Esteem_v2.middleware.LoginRequiredMiddleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'Esteem_v2.urls'
@@ -80,11 +80,11 @@ WSGI_APPLICATION = 'Esteem_v2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dfhqnstplq1qb1',
-        'USER': 'wmesbpaazileps',
-        'PASSWORD': '0fabe37fbdbb96ac457da236a8492235be63c38aeaf8247cae92018100a51b3f',
-        'HOST': 'ec2-54-247-125-38.eu-west-1.compute.amazonaws.com',
-        'PORT': '5432',
+        'NAME': 'Esteem_v2',
+        'USER': 'postgres',
+        'PASSWORD': 'abc123',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 # DATABASES = { 'default': { 'ENGINE': 'django.db.backends.sqlite3', 'NAME': 'mydatabase', } }

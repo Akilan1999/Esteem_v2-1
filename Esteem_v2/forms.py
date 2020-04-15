@@ -14,7 +14,7 @@ class UpdatedLoginView(LoginView):
 
     def form_valid(self, form):
         remember_me = form.cleaned_data['remember_me']  # get remember me data from cleaned_data of form
-        print("HIIIII")
+
         if not remember_me:
             self.request.session.set_expiry(0)  # if remember me is not selected
             self.request.session.modified = True
