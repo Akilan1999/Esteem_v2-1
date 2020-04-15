@@ -16,7 +16,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item p-2"><a href="#" class="breadcrumb-link">Dashboard</a></li>
-                                <li class="breadcrumb-item active p-2" aria-current="page">Sales Dashboard Template</li>
+                                <li class="breadcrumb-item active p-2" aria-current="page">Home Page</li>
                                 <li class="ml-auto p-2"><a class="btn btn-secondary" href="#" data-toggle="modal"
                                                            data-target="#addRoom">Add Room</a></li>
                             </ol>
@@ -41,6 +41,11 @@
                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="more_vert md-18">&#xE87C;</i> </a>
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                         <a class="dropdown-item" href="{% url 'roompage' room.room_no %}">View More</a>
+                                        <form method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="room_no" value="{{ room.room_no }}" />
+                                            <input type="submit" name="remove_room" value="Remove Room"  class="dropdown-item" />
+                                        </form>
                                     </div>
                                 </div>
                             </div>
