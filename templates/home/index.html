@@ -1,6 +1,7 @@
 {% extends 'base_template.html' %}
 {% block title %}Home Page{% endblock %}
 {% block content %}
+    {% load static %}
     <div class="container-fluid  dashboard-content">
         <!-- ============================================================== -->
         <!-- pagehader  -->
@@ -29,70 +30,34 @@
         <!-- ============================================================== -->
         <div class="row">
             <!-- metric -->
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="text-muted">Customers</h5>
-                        <div class="metric-value d-inline-block">
-                            <h1 class="mb-1 text-primary">32,100 </h1>
-                        </div>
-                        <div class="metric-label d-inline-block float-right text-success">
-                            <i class="fa fa-fw fa-caret-up"></i><span>5.27%</span>
-                        </div>
-                    </div>
-                    <div id="sparkline-1"></div>
-                </div>
-            </div>
-            <!-- /. metric -->
-            <!-- metric -->
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="text-muted">Order</h5>
-                        <div class="metric-value d-inline-block">
-                            <h1 class="mb-1 text-primary">4,200 </h1>
-                        </div>
-                        <div class="metric-label d-inline-block float-right text-danger">
-                            <i class="fa fa-fw fa-caret-down"></i><span>1.08%</span>
+            {% if Room %}
+                {% for room in Room %}
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-header d-flex">
+                                <h4 class="mb-0">{{ room.room_name }}</h4>
+                                <div class="dropdown ml-auto">
+                                    <a class="toolbar" href="#" role="button" id="dropdownMenuLink"
+                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="more_vert md-18">&#xE87C;</i> </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                        <a class="dropdown-item" href="{% url 'roompage' room.room_no %}">View More</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="metric-value d-inline-block">
+                                    <h1 class="mb-1 text-primary">32,100 </h1>
+                                </div>
+                                <div class="metric-label d-inline-block float-right text-success">
+                                    <i class="fa fa-fw fa-caret-up"></i><span>5.27%</span>
+                                </div>
+                            </div>
+                            <div id="sparkline-1"></div>
                         </div>
                     </div>
-                    <div id="sparkline-2"></div>
-                </div>
-            </div>
-            <!-- /. metric -->
-            <!-- metric -->
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="text-muted">Revenue</h5>
-                        <div class="metric-value d-inline-block">
-                            <h1 class="mb-1 text-primary">$5,656</h1>
-                        </div>
-                        <div class="metric-label d-inline-block float-right text-danger">
-                            <i class="fa fa-fw fa-caret-down"></i><span>7.00%</span>
-                        </div>
-                    </div>
-                    <div id="sparkline-3">
-                    </div>
-                </div>
-            </div>
-            <!-- /. metric -->
-            <!-- metric -->
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="text-muted">Growth</h5>
-                        <div class="metric-value d-inline-block">
-                            <h1 class="mb-1 text-primary">+28.45% </h1>
-                        </div>
-                        <div class="metric-label d-inline-block float-right text-success">
-                            <i class="fa fa-fw fa-caret-up"></i><span>4.87%</span>
-                        </div>
-                    </div>
-                    <div id="sparkline-4"></div>
-                </div>
-            </div>
-            <!-- /. metric -->
+                {% endfor %}
+            {% endif %}
+            {# TO=DO ELSE SHOW MESSAGE       #}
         </div>
         <!-- ============================================================== -->
         <!-- revenue  -->
