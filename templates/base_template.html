@@ -9,6 +9,7 @@
     <!-- Bootstrap CSS -->
     {% load static %}
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
     <link rel="stylesheet" href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendor/fonts/circular-std/style.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendor/fonts/fontawesome/css/fontawesome-all.css' %}">
@@ -149,22 +150,10 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item dropdown nav-user">
-                            <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2"
-                               data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false"><img
-                                    src="{% static 'assets/images/avatar-1.jpg' %}" alt=""
-                                    class="user-avatar-md rounded-circle"></a>
-                            <div class="dropdown-menu dropdown-menu-right nav-user-dropdown"
-                                 aria-labelledby="navbarDropdownMenuLink2">
-                                <div class="nav-user-info">
-                                    <h5 class="mb-0 text-white nav-user-name">Naeem Khan </h5>
-                                    <span class="status"></span><span class="ml-2">Available</span>
-                                </div>
-                                <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Account</a>
-                                <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Setting</a>
-                                <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-power-off mr-2"></i>Logout</a>
-                            </div>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'energygeneration' %}">
+                                <i class="fa fa-fw fa-rocket"></i>Energy Generation
+                            </a>
                         </li>
                     </ul>
                 </div>
