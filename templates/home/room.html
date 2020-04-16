@@ -1,6 +1,7 @@
 {% extends 'base_template.html' %}
-{% block title %}Room Number{% endblock %}
+{% block title %}{{ Room_in.room_name }}{% endblock %}
 {% block breadcrumb %}Rooms{% endblock %}
+{% block page_header_name %}{{ Room_in.room_name }}{% endblock %}
 {% block content %}
     <div class="container-fluid">
         <div class="card">
@@ -12,7 +13,7 @@
     </div>
     <div class="dashboard-content">
         {% if Plugs %}
-            <div class="row">
+            <div class="row justify-content-center">
                 {% for plug in Plugs %}
                     <div class="card mr-auto">
                         <div class="card-header d-flex">
@@ -20,8 +21,8 @@
                             <div class="dropdown ml-auto">
 
                                 <a class="toolbar" href="#" role="button" id="dropdownMenuLink"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
-                                        class="more_vert md-18">&#xE87C;</i> </a>
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">more_vert</i></a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                     <form method="POST">
                                         {% csrf_token %}
