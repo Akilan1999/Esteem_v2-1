@@ -20,9 +20,9 @@
     <title>{% block title %}{% endblock %}</title>
     <style>{% block style %}{% endblock %}</style>
 </head>
-<span id="_pageName" style="display:none">{% block pagename %}{% endblock %}</span>
 <body>
 {% block main %}
+    <span id="_pageName" style="display:none">{% block pagename %}{% endblock %}</span>
     <!-- ============================================================== -->
     <!-- main wrapper -->
     <!-- ============================================================== -->
@@ -160,48 +160,13 @@
                             <li class="nav-divider">
                                 Menu
                             </li>
-                            <li class="nav-item ">
-                                <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false"
-                                   data-target="#submenu-1" aria-controls="submenu-1"><i
-                                        class="fa fa-fw fa-user-circle"></i>Dashboard <span
-                                        class="badge badge-success">6</span></a>
-                                <div id="submenu-1" class="collapse submenu" style="">
-                                    <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="{% url 'homepage' %}">Home</a>
-                                        </li>
-                                    </ul>
-                                </div>
+                            <li class="nav-item">
+                                <a data-link-name="homepage" class="nav-link" href="{% url 'homepage' %}">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'energygeneration' %}"><i
+                                <a data-link-name="energy_generation" class="nav-link"
+                                   href="{% url 'energygeneration' %}"><i
                                         class="fa fa-fw fa-rocket"></i>Energy Generation</a>
-                                <div id="submenu-2" class="collapse submenu" style="">
-                                    <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/cards.html">Cards <span
-                                                    class="badge badge-secondary">New</span></a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/general.html">General</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/carousel.html">Carousel</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/listgroup.html">List Group</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/typography.html">Typography</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/accordions.html">Accordions</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/tabs.html">Tabs</a>
-                                        </li>
-                                    </ul>
-                                </div>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false"
@@ -211,49 +176,10 @@
                                     <ul class="nav flex-column">
                                         {% for room in Room %}
                                             <li class="nav-item">
-                                                <a class="nav-link"
+                                                <a data-link-name="{{ room.room_name }}" class="nav-link"
                                                    href="{% url 'roompage' room.room_no %}">{{ room.room_name }}</a>
                                             </li>
                                         {% endfor %}
-                                    </ul>
-                                </div>
-                            </li>
-                            <li class="nav-item ">
-                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false"
-                                   data-target="#submenu-4" aria-controls="submenu-4"><i
-                                        class="fab fa-fw fa-wpforms"></i>Forms</a>
-                                <div id="submenu-4" class="collapse submenu" style="">
-                                    <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/form-elements.html">Form Elements</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/form-validation.html">Parsely
-                                                Validations</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/multiselect.html">Multiselect</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/datepicker.html">Date Picker</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/bootstrap-select.html">Bootstrap Select</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false"
-                                   data-target="#submenu-5" aria-controls="submenu-5"><i class="fas fa-fw fa-table"></i>Tables</a>
-                                <div id="submenu-5" class="collapse submenu" style="">
-                                    <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/general-table.html">General Tables</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/data-tables.html">Data Tables</a>
-                                        </li>
                                     </ul>
                                 </div>
                             </li>
@@ -341,7 +267,7 @@
             pageName = '';
         }
         if (pageName.length > 0) {
-            $("li[data-link-name='" + pageName + "']").addClass('active');
+            $("a[data-link-name='" + pageName + "']").addClass('active');
         }
     });
 </script>

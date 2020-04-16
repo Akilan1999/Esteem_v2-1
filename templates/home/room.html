@@ -2,6 +2,7 @@
 {% block title %}{{ Room_in.room_name }}{% endblock %}
 {% block breadcrumb %}Rooms{% endblock %}
 {% block page_header_name %}{{ Room_in.room_name }}{% endblock %}
+{% block pagename %}{{ Room_in.room_name }}{% endblock %}
 {% block content %}
     <div class="container-fluid">
         <div class="card">
@@ -88,7 +89,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="{{ device.0 }}_ip_address" value="{{ device.1 }}"/>
                                 <input type="submit" name="new_device" value="{{ device.0 }}"
-                                       class="btn btn-outline-secondary"/>
+                                       class="btn btn-outline-danger btn-block"/>
                             {% endfor %}
                         </form>
                     </div>
