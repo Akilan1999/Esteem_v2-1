@@ -1,11 +1,22 @@
+from django.contrib import messages
 from django.contrib.sites import requests
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
-from Home.models import room, plugs, plug_electricity_consumption, energy_generation, energy_mode, battery, \
-    power_transaction, power_generation
+from Home.models import room, plugs, plug_electricity_consumption, energy_mode
 import requests
 import datetime
+
+
+def get_api_results(request=None):
+
+    try:
+        results = requests.get("http://127.0.0.1:5000/api/alldevicesconsumption/").json()
+    except requests.exceptions.ConnectionError:
+        messages.error(request, "API is offline")
+        results = []
+
+    return results
 
 
 class BackgroundClass:
@@ -15,8 +26,7 @@ class BackgroundClass:
 
     @staticmethod
     def power_allot_func():
-        api_list = requests.get(
-            "http://127.0.0.1:5000/api/alldevicesconsumption/").json()  # print("rooms + " ,room.objects.)
+        api_list = get_api_results()
         r = room.objects.all()
         l = []
 
@@ -35,15 +45,9 @@ class BackgroundClass:
         for i in l:
             sum += i['CurConsp']
 
-            # power_req += i[CurConsp]
-        # print(power_req)
-        # check power mode
-        # Total power consumption by house
-        # Do according transaction
-
     @staticmethod
     def device_consumption():
-        api_devices_list = requests.get("http://127.0.0.1:5000/api/alldevicesconsumption/").json()
+        api_devices_list = get_api_results()
         for device in api_devices_list:
 
             if device['status'] == 'on':
@@ -58,8 +62,7 @@ class HomePage(TemplateView):
     template_name = 'home/index.html'
 
     def get(self, request, *args, **kwargs):
-        api_list = requests.get(
-            "http://127.0.0.1:5000/api/alldevicesconsumption/").json()  # print("rooms + " ,room.objects.)
+        api_list = get_api_results(request)
         r = room.objects.all()
         l = []
 
@@ -73,7 +76,7 @@ class HomePage(TemplateView):
                     if k['DeviceName'] == j.plug_name:
                         sum += k['CurConsp']
             l.append({'room_name': i.room_name, 'CurConsp': sum})
-            # room_data[r[i].room_no] = 0
+
         room_names, room_consumptions = [], []
 
         for i in range(len(l)):
@@ -84,10 +87,6 @@ class HomePage(TemplateView):
 
         for i in range(len(room_consumptions)):
             room_consumptions[i] = round(room_consumptions[i], 3)
-
-        print("Room data is : ", room_names, room_consumptions)
-
-
 
         return render(request, self.template_name,
                       {"Room": room.objects.all(), "name_rooms": room_names, "consumption_rooms": room_consumptions}, )
@@ -112,9 +111,9 @@ class EnergyGeneration(TemplateView):
         if type_data is not None:
             energy_mode.objects.all().delete()
             energy_mode.objects.create(mode_id=type_data)
-
         # Sending current mode active
-        return render(request, self.template_name, {"Energy_mode": energy_mode.objects.all()})
+        return render(request, self.template_name, {"Energy_mode": energy_mode.objects.all(),
+                                                    "Room": room.objects.all()})
 
 
 class RoomPage(TemplateView):
@@ -133,9 +132,8 @@ class RoomPage(TemplateView):
 
         consumption = []
         available_devices = []
-        dev = []
 
-        api_devices_list = requests.get("http://127.0.0.1:5000/api/alldevicesconsumption/").json()
+        api_devices_list = get_api_results()
 
         for device in api_devices_list:
             # If the device exist in current room, pass on its reading to the graph in front end.
@@ -155,7 +153,7 @@ class RoomPage(TemplateView):
     def post(self, request, *args, **kwargs):
 
         if 'new_device' in request.POST:
-            api_devices_list = requests.get("http://127.0.0.1:5000/api/alldevicesconsumption/").json()
+            api_devices_list = get_api_results()
             # Using generator, get the item from the list that matches the IP provided from front-end.
             device_data = next(item for item in api_devices_list
                                if item["ip_address"] == request.POST[request.POST['new_device'] + '_ip_address'])
@@ -191,14 +189,13 @@ class RoomPage(TemplateView):
 
 
 # JSON for nessary data for hourly data
-
 class Plugs(TemplateView):
     def get(self, request, *args, **kwargs):
         # Line graph for plugs hourly data
         plug_id = request.GET.get('plug_id')
 
         # We start with default hourly data
-        if plug_id != None:
+        if plug_id is not None:
             now = datetime.datetime.now()
             time = now.time()
             day = now.day
@@ -223,7 +220,6 @@ class Plugs(TemplateView):
 
 
 # Sum Data for every Room for now every hour
-
 class Rooms(TemplateView):
     def get(self, request, *args, **kwargs):
         room_id = request.GET.get('room_id')
@@ -243,6 +239,7 @@ class Rooms(TemplateView):
             plugs_in_room = plugs.objects.filter(room_no=room_id).order_by("plug_no")
         except plugs.DoesNotExist:
             plugs_in_room = []
+
             for i in range(hour):
                 hourly_data.append({'hour': i, 'Watts': 0})
             return JsonResponse(hourly_data, safe=False)
@@ -253,12 +250,10 @@ class Rooms(TemplateView):
 
         # Not a effective way but there is duplicate code but for the current time it's a working solution
         # sum for every hour
-
         for i in plugs_in_room:
-
             plug_no = plugs.objects.get(plug_name=i.plug_name)
-
             hourly_data_plug = []
+
             for k in range(hour):
                 sum = 0
                 l = (list(plug_electricity_consumption.objects.filter(plug_no=plug_no, timestamp__day=day,
@@ -278,7 +273,8 @@ class Rooms(TemplateView):
         return JsonResponse(hourly_data, safe=False)
 
 
-# NOTICE : There is a lot of redudancy as doing inner API calls within django API server seems to be having some major issues
+# NOTICE : There is a lot of redundancy as doing inner API calls
+# within django API server seems to be having some major issues
 class total_consumption(TemplateView):
     def get(self, request, *args, **kwargs):
 
