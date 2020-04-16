@@ -27,7 +27,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="metric-value d-inline-block">
-                                    <h1 class="mb-1 text-primary">32,100 </h1>
+                                    <h1 class="room-cons-data_{{ room.room_no }} mb-1 text-primary">0.0 </h1>
                                 </div>
                                 <div class="metric-label d-inline-block float-right text-success">
                                     <i class="fa fa-fw fa-caret-up"></i><span>5.27%</span>
@@ -416,36 +416,49 @@
     </div>
 
     <script>
+    $(document).ready(function () {
+        var maingraph_consumptions = "{{ consumption_rooms }}";
+        var consumption_label = JSON.parse(maingraph_consumptions);
+        var i = 0
+        {% for rooms in Room %}
+            var r = "room-cons-data_" + "{{ rooms.room_no}}";
+            console.log(r);
+            document.getElementsByClassName(r)[0].textContent = consumption_label[i] +" kWh";
+            i ++;
+        {% endfor %}
 
-    var maingraph_rooms = "{{ name_rooms| safe }}";
-    maingraph_rooms = maingraph_rooms.replace(/'/g, '"');
-    var maingraph_consumptions = "{{ consumption_rooms }}";
-    var consumption_label = JSON.parse(maingraph_consumptions)
-    var room_label = JSON.parse(maingraph_rooms)
-    console.log(maingraph_consumptions, maingraph_rooms);
-    var ctx = document.getElementById("room_energy_pie").getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: 'doughnut',
 
-                data: {
-                    labels: room_label,
-                    datasets: [{
-                        backgroundColor: [
-                            "#5969ff",
-                            "#ff407b",
-                            "#25d5f2",
-                            "#ffc750"
-                        ],
-                        data: consumption_label
-                    }]
-                },
-                options: {
-                    legend: {
-                        display: true
 
-                    }
+
+        var maingraph_rooms = "{{ name_rooms| safe }}";
+        maingraph_rooms = maingraph_rooms.replace(/'/g, '"');
+
+        var room_label = JSON.parse(maingraph_rooms)
+        console.log(maingraph_consumptions, maingraph_rooms);
+        var ctx = document.getElementById("room_energy_pie").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+
+            data: {
+                labels: room_label,
+                datasets: [{
+                    backgroundColor: [
+                        "#5969ff",
+                        "#ff407b",
+                        "#25d5f2",
+                        "#ffc750"
+                    ],
+                    data: consumption_label
+                }]
+            },
+            options: {
+                legend: {
+                    display: true
+
                 }
+            }
 
-            });
+        });
+    });
     </script>
 {% endblock %}
