@@ -6,7 +6,7 @@
         <div class="card">
             <h5 class="card-header">Area Chart</h5>
             <div class="card-body">
-                <div id="c3chart_area"><canvas id="EnergyChart"></canvas></div>
+                <div id="c3chart_area"><canvas id="EnergyChart" width="200" height="250"></canvas></div>
             </div>
         </div>
     </div>
@@ -234,7 +234,7 @@
                     console.log(plug[i])
                     chart_devices(plug[i], values, time);
                 },
-                async: true
+                async: false
             });
 
         }
