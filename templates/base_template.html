@@ -1,17 +1,15 @@
 <!doctype html>
 <html lang="en">
-
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     {% load static %}
-    <script src="{% static './assets/libs/js/jquery.min.js' %}"></script>
-    <script src="{% static './assets/libs/js/chartconf.js' %}"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="{% static 'assets/libs/js/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/libs/js/chartconf.js' %}"></script>
     <link rel="stylesheet" href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendor/fonts/circular-std/style.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendor/fonts/fontawesome/css/fontawesome-all.css' %}">
@@ -22,6 +20,7 @@
     <title>{% block title %}{% endblock %}</title>
     <style>{% block style %}{% endblock %}</style>
 </head>
+<span id="_pageName" style="display:none">{% block pagename %}{% endblock %}</span>
 <body>
 {% block main %}
     <!-- ============================================================== -->
@@ -43,62 +42,32 @@
                     <ul class="navbar-nav ml-auto navbar-right-top">
                         <li class="nav-item dropdown notification">
                             <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false"><i class="fas fa-fw fa-bell"></i> <span
-                                    class="indicator"></span></a>
+                               aria-haspopup="true" aria-expanded="false"><i class="fas fa-fw fa-bell"></i>
+                                {% if messages %}
+                                    <span class="indicator"></span>
+                                {% endif %}</a>
                             <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
                                 <li>
                                     <div class="notification-title"> Notification</div>
                                     <div class="notification-list">
                                         <div class="list-group">
-                                            <a href="#" class="list-group-item list-group-item-action active">
-                                                <div class="notification-info">
-                                                    <div class="notification-list-user-img"><img
-                                                            src="{% static 'assets/images/avatar-2.jpg' %}" alt=""
-                                                            class="user-avatar-md rounded-circle"></div>
-                                                    <div class="notification-list-user-block"><span
-                                                            class="notification-list-user-name">Jeremy Rakestraw</span>accepted
-                                                        your invitation to join the team.
-                                                        <div class="notification-date">2 min ago</div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="list-group-item list-group-item-action">
-                                                <div class="notification-info">
-                                                    <div class="notification-list-user-img"><img
-                                                            src="{% static 'assets/images/avatar-3.jpg' %}" alt=""
-                                                            class="user-avatar-md rounded-circle"></div>
-                                                    <div class="notification-list-user-block"><span
-                                                            class="notification-list-user-name">John Abraham</span>is
-                                                        now
-                                                        following you
-                                                        <div class="notification-date">2 days ago</div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="list-group-item list-group-item-action">
-                                                <div class="notification-info">
-                                                    <div class="notification-list-user-img"><img
-                                                            src="{% static 'assets/images/avatar-4.jpg' %}" alt=""
-                                                            class="user-avatar-md rounded-circle"></div>
-                                                    <div class="notification-list-user-block"><span
-                                                            class="notification-list-user-name">Monaan Pechi</span> is
-                                                        watching your main repository
-                                                        <div class="notification-date">2 min ago</div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="list-group-item list-group-item-action">
-                                                <div class="notification-info">
-                                                    <div class="notification-list-user-img"><img
-                                                            src="{% static 'assets/images/avatar-5.jpg' %}" alt=""
-                                                            class="user-avatar-md rounded-circle"></div>
-                                                    <div class="notification-list-user-block"><span
-                                                            class="notification-list-user-name">Jessica Caruso</span>accepted
-                                                        your invitation to join the team.
-                                                        <div class="notification-date">2 min ago</div>
-                                                    </div>
-                                                </div>
-                                            </a>
+                                            {% if messages %}
+                                                {% for message in messages %}
+                                                    <a href="#"
+                                                       class="list-group-item list-group-item-action active">
+                                                        <div class="notification-info">
+                                                            <div class="notification-list-user-img"><img
+                                                                    src="{% static 'assets/images/avatar-2.jpg' %}"
+                                                                    alt=""
+                                                                    class="user-avatar-md rounded-circle"></div>
+                                                            <div class="notification-list-user-block">{{ message }}
+                                                                <div class="notification-date">2 min ago</div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                {% endfor %}
+                                            {% endif %}
+
                                         </div>
                                     </div>
                                 </li>
@@ -153,10 +122,15 @@
                             </ul>
                         </li>
                         <li class="nav-item dropdown nav-user">
-                            <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{% static 'assets/images/avatar-1.jpg' %}" alt="" class="user-avatar-md rounded-circle"></a>
-                            <div class="dropdown-menu dropdown-menu-right nav-user-dropdown" aria-labelledby="navbarDropdownMenuLink2">
+                            <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img
+                                    src="{% static 'assets/images/avatar-1.jpg' %}" alt=""
+                                    class="user-avatar-md rounded-circle"></a>
+                            <div class="dropdown-menu dropdown-menu-right nav-user-dropdown"
+                                 aria-labelledby="navbarDropdownMenuLink2">
                                 <div class="nav-user-info">
-                                    <h5 class="mb-0 text-white nav-user-name">Welcome, {{ request.user.get_full_name }}</h5>
+                                    <h5 class="mb-0 text-white nav-user-name">
+                                        Welcome, {{ request.user.get_full_name }}</h5>
                                 </div>
                                 <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Account</a>
                                 <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Setting</a>
@@ -232,27 +206,15 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false"
                                    data-target="#submenu-3" aria-controls="submenu-3"><i
-                                        class="fas fa-fw fa-chart-pie"></i>Chart</a>
+                                        class="fas fa-fw fa-chart-pie"></i>Rooms</a>
                                 <div id="submenu-3" class="collapse submenu" style="">
                                     <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/chart-c3.html">C3 Charts</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/chart-chartist.html">Chartist Charts</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/chart-charts.html">Chart</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/chart-morris.html">Morris</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/chart-sparkline.html">Sparkline</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/chart-gauge.html">Guage</a>
-                                        </li>
+                                        {% for room in Room %}
+                                            <li class="nav-item">
+                                                <a class="nav-link"
+                                                   href="{% url 'roompage' room.room_no %}">{{ room.room_name }}</a>
+                                            </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </li>
@@ -313,7 +275,7 @@
             <div class="container-fluid dashboard-content">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="page-header">
-                        <h3 class="mb-2">Home Page</h3>
+                        <h3 class="mb-2">{% block page_header_name %}{% endblock %}</h3>
                         <div class="page-breadcrumb">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
@@ -370,6 +332,19 @@
 
     </div>
 {% endblock %}
+<script>
+    $(function () {
+        var pageName = document.getElementById('_pageName');
+        if (pageName != null) {
+            pageName = pageName.innerHTML;
+        } else {
+            pageName = '';
+        }
+        if (pageName.length > 0) {
+            $("li[data-link-name='" + pageName + "']").addClass('active');
+        }
+    });
+</script>
 <script src="{% static 'assets/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
 <!-- bootstrap bundle js-->
 <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.js' %}"></script>
