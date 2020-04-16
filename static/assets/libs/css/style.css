@@ -1950,7 +1950,9 @@ Container / Wrapper
 .dashboard-content {
     padding: 30px 30px 0px 30px;
 }
-
+.hide-item {
+    opacity: 0;
+}
 
 /*-----------------------
 Splash Container / Wrapper
