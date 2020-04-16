@@ -1,10 +1,14 @@
 {% extends 'base_template.html' %}
 {% block title %}Energy Generation Page{% endblock %}
+{% block breadcrumb %}Energy Generation{% endblock %}
+{% block page_header_name %}Energy Generation{% endblock %}
 {% block content %}
-    <div class="panel-body">
-        <canvas id="bigDashboardChart"></canvas>
+    <div class="row justify-content-center">
+        <div class="container">
+            <canvas id="c3chart_area"></canvas>
+        </div>
     </div>
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
             <div class="card">
                 <div class="card-body">
@@ -40,7 +44,7 @@
             <!-- metric -->
 
     <script>
-    var ctx = document.getElementById('bigDashboardChart').getContext('2d');
+    var ctx = document.getElementById('c3chart_area').getContext('2d');
 
     chartColor = "#FFFFFF";
 
