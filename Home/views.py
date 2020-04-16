@@ -82,7 +82,12 @@ class HomePage(TemplateView):
 
         room_names = str(room_names)
 
-        # return JsonResponse(l, safe= False)
+        for i in range(len(room_consumptions)):
+            room_consumptions[i] = round(room_consumptions[i], 3)
+
+        print("Room data is : ", room_names, room_consumptions)
+
+
 
         return render(request, self.template_name,
                       {"Room": room.objects.all(), "name_rooms": room_names, "consumption_rooms": room_consumptions}, )
