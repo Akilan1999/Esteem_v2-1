@@ -1,12 +1,14 @@
 {% extends 'base_template.html' %}
 {% block title %}Home Page{% endblock %}
 {% block breadcrumb %}Home Page{% endblock %}
+{% block page_header_name %}Home Page{% endblock %}
+{% block pagename %}Home{% endblock %}
 {% block content %}
     {% load static %}
     <div class="dashboard-content">
-        <div class="row">
-            <!-- metric -->
-            {% if Room %}
+        <!-- Rooms cards -->
+        {% if Room %}
+            <div class="row">
                 {% for room in Room %}
                     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
                         <div class="card">
@@ -14,13 +16,15 @@
                                 <h4 class="mb-0">{{ room.room_name }}</h4>
                                 <div class="dropdown ml-auto">
                                     <a class="toolbar" href="#" role="button" id="dropdownMenuLink"
-                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="more_vert md-18">&#xE87C;</i> </a>
+                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
+                                            class="material-icons">more_vert</i> </a>
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                         <a class="dropdown-item" href="{% url 'roompage' room.room_no %}">View More</a>
                                         <form method="POST">
                                             {% csrf_token %}
-                                            <input type="hidden" name="room_no" value="{{ room.room_no }}" />
-                                            <input type="submit" name="remove_room" value="Remove Room"  class="dropdown-item" />
+                                            <input type="hidden" name="room_no" value="{{ room.room_no }}"/>
+                                            <input type="submit" name="remove_room" value="Remove Room"
+                                                   class="dropdown-item"/>
                                         </form>
                                     </div>
                                 </div>
@@ -37,9 +41,22 @@
                         </div>
                     </div>
                 {% endfor %}
-            {% endif %}
-            {# TO=DO ELSE SHOW MESSAGE       #}
-        </div>
+            </div>
+        {% else %}
+            <div class="row justify-content-center">
+                <div class="col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">There are no rooms available. Please click on the button below to add
+                                one.</p>
+                            <a class="btn btn-secondary" href="#"
+                               data-toggle="modal"
+                               data-target="#addRoom">Add Room</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
         <!-- ============================================================== -->
         <!-- revenue  -->
         <!-- ============================================================== -->
@@ -416,49 +433,49 @@
     </div>
 
     <script>
-    $(document).ready(function () {
-        var maingraph_consumptions = "{{ consumption_rooms }}";
-        var consumption_label = JSON.parse(maingraph_consumptions);
-        var i = 0
-        {% for rooms in Room %}
-            var r = "room-cons-data_" + "{{ rooms.room_no}}";
-            console.log(r);
-            document.getElementsByClassName(r)[0].textContent = consumption_label[i] +" kWh";
-            i ++;
-        {% endfor %}
+        $(document).ready(function () {
+            var maingraph_consumptions = "{{ consumption_rooms }}";
+            var consumption_label = JSON.parse(maingraph_consumptions);
+            var i = 0
+            {% for rooms in Room %}
+                var r = "room-cons-data_" + "{{ rooms.room_no}}";
+                console.log(r);
+                document.getElementsByClassName(r)[0].textContent = consumption_label[i] + " kWh";
+                i++;
+            {% endfor %}
 
 
 
 
-        var maingraph_rooms = "{{ name_rooms| safe }}";
-        maingraph_rooms = maingraph_rooms.replace(/'/g, '"');
+            var maingraph_rooms = "{{ name_rooms| safe }}";
+            maingraph_rooms = maingraph_rooms.replace(/'/g, '"');
 
-        var room_label = JSON.parse(maingraph_rooms)
-        console.log(maingraph_consumptions, maingraph_rooms);
-        var ctx = document.getElementById("room_energy_pie").getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'doughnut',
+            var room_label = JSON.parse(maingraph_rooms)
+            console.log(maingraph_consumptions, maingraph_rooms);
+            var ctx = document.getElementById("room_energy_pie").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
 
-            data: {
-                labels: room_label,
-                datasets: [{
-                    backgroundColor: [
-                        "#5969ff",
-                        "#ff407b",
-                        "#25d5f2",
-                        "#ffc750"
-                    ],
-                    data: consumption_label
-                }]
-            },
-            options: {
-                legend: {
-                    display: true
+                data: {
+                    labels: room_label,
+                    datasets: [{
+                        backgroundColor: [
+                            "#5969ff",
+                            "#ff407b",
+                            "#25d5f2",
+                            "#ffc750"
+                        ],
+                        data: consumption_label
+                    }]
+                },
+                options: {
+                    legend: {
+                        display: true
 
+                    }
                 }
-            }
 
+            });
         });
-    });
     </script>
 {% endblock %}
