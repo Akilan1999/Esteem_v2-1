@@ -7,6 +7,19 @@
     <div class="container-fluid">
         <div class="card">
             <h5 class="card-header">Area Chart</h5>
+            <div>
+                <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                    <button onclick="liveConsumption_mainGraph()" class="btn btn-primary ">
+                        <input type="radio" name="options" id="option1" checked>Live
+                    </button>
+                    <button onclick="hourlyConsumption_mainGraph()" class="btn btn-primary">
+                        <input type="radio" name="options" id="option2" > Hourly
+                    </button>
+                    <button class="btn btn-primary">
+                        <input type="radio" name="options" id="option3"> Daily
+                    </button>
+                </div>
+            </div>
             <div class="card-body">
                 <div id="c3chart_area"><canvas id="EnergyChart" width="200" height="250"></canvas></div>
             </div>
@@ -104,116 +117,176 @@
     <script>
 
     $(document).ready(function () {
-        var consumptionn = "{{ Consumption }}";
-        console.log(consumptionn);
 
-        var dataLabel = JSON.parse(consumptionn);
-        console.log("datalabel values for main graph :" + dataLabel)
+        liveConsumption_mainGraph = function() {
 
-        var deviceLabel = [];
+            var consumptionn = "{{ Consumption }}";
+            var dataLabel = JSON.parse(consumptionn);
+            console.log("datalabel values for main graph : " + dataLabel)
 
-        {% for plugs in Plugs %}
-            var device_name = "{{ plugs.plug_name }}";
-            deviceLabel.push(device_name)
-        {% endfor %}
-        // All device_id here
-        var ctx = document.getElementById('EnergyChart').getContext("2d");
-        var chartColor = "#FFFFFF";
+            var deviceLabel = [];
+            {% for plugs in Plugs %}
+                var device_name = "{{ plugs.plug_name }}";
+                deviceLabel.push(device_name)
+            {% endfor %}
 
-        var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
-        gradientStroke.addColorStop(0, '#80b6f4');
-        gradientStroke.addColorStop(1, chartColor);
+            var ctx = document.getElementById('EnergyChart').getContext("2d");
+            var chartColor = "#FFFFFF";
 
-        var gradientFill = ctx.createLinearGradient(0, 200, 0, 50);
-        gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
-        gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
+            var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+            gradientStroke.addColorStop(0, '#80b6f4');
+            gradientStroke.addColorStop(1, chartColor);
+            var gradientFill = ctx.createLinearGradient(0, 200, 0, 50);
+            gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+            gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
 
-        var myChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: deviceLabel,
-                datasets: [{
-                    label: 'Current Consumption',
-                    data: dataLabel,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                layout: {
-                    padding: {
-                        left: 20,
-                        right: 20,
-                        top: 0,
-                        bottom: 0
-                    }
-                },
-                maintainAspectRatio: false,
-                tooltips: {
-                    backgroundColor: '#fff',
-                    titleFontColor: '#333',
-                    bodyFontColor: '#666',
-                    bodySpacing: 4,
-                    xPadding: 12,
-                    mode: "nearest",
-                    intersect: 0,
-                    position: "nearest"
-                },
-                legend: {
-                    position: "top",
-                    fillStyle: "",
-                    display: true,
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            fontColor: "rgba(255,255,255,0.4)",
-                            fontStyle: "bold",
-                            beginAtZero: true,
-                            maxTicksLimit: 5,
-                            padding: 10
-                        },
-                        gridLines: {
-                            drawTicks: true,
-                            drawBorder: false,
-                            display: true,
-                            color: "rgba(255,255,255,0.1)",
-                            zeroLineColor: "transparent"
-                        }
-
-                    }],
-                    xAxes: [{
-                        gridLines: {
-                            zeroLineColor: "transparent",
-                            display: false,
-
-                        },
-                        ticks: {
-                            padding: 10,
-                            fontColor: "rgba(255,255,255,0.4)",
-                            fontStyle: "bold"
-                        }
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: deviceLabel,
+                    datasets: [{
+                        label: 'Current Consumption',
+                        data: dataLabel,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
                     }]
+                },
+                options: {
+                    layout: {
+                        padding: {
+                            left: 20,
+                            right: 20,
+                            top: 0,
+                            bottom: 0
+                        }
+                    },
+                    maintainAspectRatio: false,
+                    tooltips: {
+                        backgroundColor: '#fff',
+                        titleFontColor: '#333',
+                        bodyFontColor: '#666',
+                        bodySpacing: 4,
+                        xPadding: 12,
+                        mode: "nearest",
+                        intersect: 0,
+                        position: "nearest"
+                    },
+                    legend: {
+                        position: "top",
+                        fillStyle: "",
+                        display: true,
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                fontColor: "rgba(255,255,255,0.4)",
+                                fontStyle: "bold",
+                                beginAtZero: true,
+                                maxTicksLimit: 5,
+                                padding: 10
+                            },
+                            gridLines: {
+                                drawTicks: true,
+                                drawBorder: false,
+                                display: true,
+                                color: "rgba(255,255,255,0.1)",
+                                zeroLineColor: "transparent"
+                            }
+
+                        }],
+                        xAxes: [{
+                            gridLines: {
+                                zeroLineColor: "transparent",
+                                display: false,
+
+                            },
+                            ticks: {
+                                padding: 10,
+                                fontColor: "rgba(255,255,255,0.4)",
+                                fontStyle: "bold"
+                            }
+                        }]
+                    }
                 }
+
+            });
+        }
+        liveConsumption_mainGraph();
+
+
+        hourlyConsumption_mainGraph = function () {
+            room = "{{ Room_in.room_no }}";
+            jQuery.ajax({
+                url: '/room?room_id='+room,
+                success: function (data) {
+                values = [];
+                time = [];
+                for(var j = 0;j < data.length;j++){
+                   var time_range = data[j].hour + "-" + data[j].hour + ":59";
+                   console.log(time_range)
+                   console.log(data[j].Watts);
+                   values.push(data[j].Watts);
+                   time.push(time_range);
+                }
+                   console.log(i);
+                   chart_devices(room, values, time);
+                },
+                async: false
+            });
+
+            async function chart_devices(room, values, time) {
+
+                var ctx1 = document.getElementById('EnergyChart').getContext("2d");
+                var chartColor = "#FFFFFF";
+
+                gradientStroke = ctx1.createLinearGradient(500, 0, 100, 0);
+                gradientStroke.addColorStop(0, '#80b6f4');
+                gradientStroke.addColorStop(1, chartColor);
+                gradientFill = ctx1.createLinearGradient(0, 170, 0, 50);
+                // gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+                //gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+                var myChart1 = new Chart(ctx1, {
+                    type: 'line',
+                    responsive: true,
+                    data: {
+                        labels: time,
+                        datasets: [{
+                            label: room +" KwH",
+                            borderColor: "#f96332",
+                            pointBorderColor: "#FFF",
+                            pointBackgroundColor: "#f96332",
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 4,
+                            pointHoverBorderWidth: 1,
+                            pointRadius: 4,
+                            fill: true,
+                            backgroundColor: gradientFill,
+                            borderWidth: 2,
+                            data: values       // Data point
+                        }
+                        ]
+                    },
+                    options: gradientChartOptionsConfiguration
+                });
             }
 
-        });
-
+        }
 
         var plug = [{% for x in Plugs %}'{{ x.plug_name|escapejs }}',{% endfor %}];
         for (var i = 0; i < plug.length; i++) {
@@ -246,7 +319,7 @@
 
             var device_id = "energy_generation_" + device;
             var ctx1 = document.getElementById(device_id).getContext("2d");
-
+            var chartColor = "#FFFFFF";
             gradientStroke = ctx1.createLinearGradient(500, 0, 100, 0);
             gradientStroke.addColorStop(0, '#80b6f4');
             gradientStroke.addColorStop(1, chartColor);
@@ -273,18 +346,10 @@
                     }
                     ]
                 },
-                options: gradientChartOptionsConfiguration
+                {#options: gradientChartOptionsConfiguration#}
             });
         }
     });
-
-
-
-
-
-
-
-
 
 
     </script>
