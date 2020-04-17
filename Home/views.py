@@ -254,6 +254,8 @@ class BackgroundClass:
                 except plugs.DoesNotExist:
                     plug_no = None
 
+  
+
 
 class HomePage(TemplateView):
     template_name = 'home/index.html'

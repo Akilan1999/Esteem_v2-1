@@ -106,58 +106,39 @@
     var gradientFill = ctx.createLinearGradient(0, 200, 0, 50);
     gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
     gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
+
+
+    jQuery.ajax({
+        url: '/energy_data',
+        success: function (data) {
+          energy_data(data);
+
+        },
+          async: false
+    });
+
+
+async function energy_data(data){
+
+   var datasets = [];
+   var labels = [];
+
+   for(var i = 0; i < data.length; i++){
+     var data_chart = [];
+
+     for(var j = 0; j < data[i].data.length; j++){
+       data_chart.push(data[i].data[j].Watts);
+     }
+     datasets.push({label:data[i].name,borderColor: '#fecf00',pointBorderColor: '#fecf00',pointBackgroundColor: "yellow",pointHoverBackgroundColor: "yellow",pointHoverBorderColor: chartColor,pointBorderWidth: 1,
+     pointHoverRadius: 7,pointHoverBorderWidth: 2,pointRadius: 5,fill: true,backgroundColor: gradientFill,borderWidth: 2,data:data_chart})
+
+   }
+
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ["1:00", "2:00", "5:00"],
-            datasets: [{
-                label: "Solar Panel KwH",
-                borderColor: '#fecf00',
-                pointBorderColor: '#fecf00',
-                pointBackgroundColor: "yellow",
-                pointHoverBackgroundColor: "yellow",
-                pointHoverBorderColor: chartColor,
-                pointBorderWidth: 1,
-                pointHoverRadius: 7,
-                pointHoverBorderWidth: 2,
-                pointRadius: 5,
-                fill: true,
-                backgroundColor: gradientFill,
-                borderWidth: 2,
-                data: [1, 7, 11] // Fill in data here
-            },
-            {
-                label: "Battery KwH",
-                borderColor: "green",
-                pointBorderColor: "green",
-                pointBackgroundColor: "green",
-                pointHoverBackgroundColor: "green",
-                pointHoverBorderColor: "green",
-                pointBorderWidth: 1,
-                pointHoverRadius: 7,
-                pointHoverBorderWidth: 2,
-                pointRadius: 5,
-                fill: true,
-                backgroundColor: gradientFill,
-                borderWidth: 2,
-                data: [8, 7, -2] // Fill in data here
-            },
-            {
-                label: "Grid KwH",
-                borderColor: "red",
-                pointBorderColor: "red",
-                pointBackgroundColor: "red",
-                pointHoverBackgroundColor: "red",
-                pointHoverBorderColor: "red",
-                pointBorderWidth: 1,
-                pointHoverRadius: 7,
-                pointHoverBorderWidth: 2,
-                pointRadius: 5,
-                fill: true,
-                backgroundColor: gradientFill,
-                borderWidth: 2,
-                data: [0, 0, 0] // Fill in data here
-            }]
+            labels: ["0", "1", "2","3","4","5","6","7","8","9","10","11","12","13","14"],
+            datasets: datasets
         },
         options: {
             scales: {
@@ -169,6 +150,8 @@
             }
         }
     });
+
+  }
     </script>
 
 {% endblock %}
