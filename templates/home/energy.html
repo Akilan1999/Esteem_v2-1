@@ -9,14 +9,32 @@
             <canvas id="c3chart_area"></canvas>
         </div>
     </div>
+    <br>
+    <br>
     <div class="row justify-content-center">
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
             <div class="card">
                 <div class="card-body">
                     <h3 class="text-muted">Backup Mode</h3>
                     <div>
-                        <h5>Uses power from unless battery charge 100% (Use only when frequent power cuts).  </h5>
+                        <h5>Does not pull any power from battery unless there is power cut and renewable sources do not generate enough power.  </h5>
                     </div>
+                    {% load custom_tags %}
+                              {% for obj in Energy_mode %}
+                              {% if obj.mode_id == "e1"%}
+                              <button type="button"
+                              class="btn btn-secondary" id="e2">
+                              Disable
+                             </button>
+                              {% endif %}
+                              {% if obj.mode_id != "e1"%}
+                              <button type="button"
+                                      class="btn btn-primary" id="e1" onclick="window.location.href = '/energy?type_data=e1'">
+                                      Enable
+                              </button>
+                              {% endif %}
+
+                              {% endfor %}
                 </div>
             </div>
         </div>
@@ -25,8 +43,24 @@
                 <div class="card-body">
                     <h3 class="text-muted">Self Powered</h3>
                     <div>
-                        <h5>Uses power from unless battery charge 100% (Use only when frequent power cuts).  </h5>
+                        <h5> House is powered with self sufficient resources such as battery and renewable sources.  </h5>
                     </div>
+                    {% load custom_tags %}
+                              {% for obj in Energy_mode %}
+                              {% if obj.mode_id == "e2"%}
+                              <button type="button"
+                              class="btn btn-secondary" id="e2">
+                              Disable
+                             </button>
+                              {% endif %}
+                              {% if obj.mode_id != "e2"%}
+                              <button type="button"
+                                      class="btn btn-primary" id="e2" onclick="window.location.href = '/energy?type_data=e2'">
+                                      Enable
+                              </button>
+                              {% endif %}
+
+                              {% endfor %}
                 </div>
             </div>
         </div>
@@ -35,8 +69,24 @@
                 <div class="card-body">
                     <h3 class="text-muted">Only Grid</h3>
                     <div>
-                        <h5>Uses power from unless battery charge 100% (Use only when frequent power cuts).  </h5>
+                        <h5> Power is only pulled from the Grid </h5>
                     </div>
+                    {% load custom_tags %}
+                              {% for obj in Energy_mode %}
+                              {% if obj.mode_id == "e3"%}
+                              <button type="button"
+                              class=" btn btn-secondary" id="e3">
+                              Disable
+                             </button>
+                              {% endif %}
+                              {% if obj.mode_id != "e3"%}
+                              <button type="button"
+                                      class="btn btn-primary" id="e3" onclick="window.location.href = '/energy?type_data=e3'">
+                                      Enable
+                              </button>
+                              {% endif %}
+
+                              {% endfor %}
                 </div>
             </div>
         </div>
@@ -122,4 +172,3 @@
     </script>
 
 {% endblock %}
-
