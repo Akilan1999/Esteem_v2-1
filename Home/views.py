@@ -92,6 +92,7 @@ class BackgroundClass:
                     print(j["PowerCut"])
                     if energy_taken != 0 and j["PowerCut"] == False and j["CurrentSupplied"] >= energy_taken:
                         power_transaction.objects.create(e_id=e_name,transfer= -abs(energy_taken))
+                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
                         energy_taken = 0
 
                     elif j["PowerCut"] == True:
@@ -176,6 +177,7 @@ class BackgroundClass:
                 if j["type"] == "Grid":
                     if energy_taken != 0 and j["PowerCut"] == False and j["CurrentSupplied"] >= energy_taken:
                         power_transaction.objects.create(e_id=e_name,transfer= -abs(energy_taken))
+                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
                         energy_taken = 0
 
                     elif j["PowerCut"] == True:
@@ -224,6 +226,7 @@ class BackgroundClass:
                 if j["type"] == "Grid":
                     if energy_taken != 0 and j["PowerCut"] == False and j["CurrentSupplied"] >= energy_taken:
                         power_transaction.objects.create(e_id=e_name,transfer= -abs(energy_taken))
+                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
                         energy_taken = 0
 
                     elif j["PowerCut"] == True:
@@ -256,10 +259,38 @@ class BackgroundClass:
                                        energy_taken -= energy_taken
 
 
-        ## Delete hourly data at the end of the day
+        ##-------------------------------------- Delete hourly data at the end of the day -----------------------------------------
 
-        #First we need to to get sum of all energy deivces
-        
+        #------------ First we need to to get sum of all energy devices ---------------
+
+        now = datetime.datetime.now()
+        time = now.time()
+        day = now.day
+        month = now.month
+        year = now.year
+        hour = time.hour
+        minute = time.minute
+
+        print(minute)
+
+        if hour == 23 and minute == 59:
+
+            energy = energy_generation.objects.all()
+
+            for i in energy:
+                transactions = power_transaction.objects.filter(e_id=i,timestamp__day=day,timestamp__month=month,timestamp__year=year)
+                sum = 0
+                for k in transactions:
+                    sum += k.transfer
+
+                #Deletes all data of that plug
+                power_transaction.objects.filter(e_id=i,timestamp__day=day,timestamp__month=month,timestamp__year=year).delete()
+
+                #Adds the total power back
+                power_transaction.objects.create(e_id=i,transfer=sum)
+
+                print("data deleted")
+
 
 
 
@@ -276,6 +307,31 @@ class BackgroundClass:
                     plug_electricity_consumption.objects.create(plug_no=plug_no, Watt=device['ElecConsp'])
                 except plugs.DoesNotExist:
                     plug_no = None
+
+        now = datetime.datetime.now()
+        time = now.time()
+        day = now.day
+        month = now.month
+        year = now.year
+        hour = time.hour
+        minute = time.minute
+
+        if hour == 23 and minute == 59:
+
+            plug = plugs.objects.all()
+
+            for i in plug:
+              consumption = plug_electricity_consumption.objects.filter(plug_no = i,timestamp__day=day,timestamp__month=month,timestamp__year=year)
+              sum = 0
+
+              for j in consumption:
+                  sum += j.Watt
+
+              plug_electricity_consumption.objects.filter(plug_no = i,timestamp__day=day,timestamp__month=month,timestamp__year=year).delete()
+
+              plug_electricity_consumption.objects.create(plug_no = i,Watt = sum)
+
+
 
 
 
