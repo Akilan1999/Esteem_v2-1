@@ -113,4 +113,4 @@ def powerSupply(source, charge):
 
 
 if __name__ == '__main__':
-    power_app.run(port=12346, use_reloader=False)
+    power_app.run(port=12345, use_reloader=False)
