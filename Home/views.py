@@ -7,6 +7,7 @@ from Home.models import room, plugs, plug_electricity_consumption, energy_genera
     power_transaction, power_generation
 import requests
 import datetime
+import rest_framework.request as rest_request
 
 
 def get_api_results(request=None):
@@ -14,7 +15,8 @@ def get_api_results(request=None):
     try:
         results = requests.get("http://127.0.0.1:5000/api/alldevicesconsumption/").json()
     except requests.exceptions.ConnectionError:
-        messages.error(request, "API is offline")
+        if request:
+            messages.error(request, "API is offline")
         results = []
 
     return results
