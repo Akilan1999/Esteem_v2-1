@@ -1,5 +1,7 @@
 import flask
 from flask import jsonify
+from apscheduler.schedulers.background import BackgroundScheduler
+import time
 
 power_app = flask.Flask(__name__)
 power_app.config["DEBUG"] = True
@@ -19,8 +21,8 @@ PowerSources = [
 
     {
         'SourceName': 'SolarPanel1',
-        'type':'EnergyGenerator',
-        'CurrentGenerated':3.68,
+        'type': 'EnergyGenerator',
+        'CurrentGenerated': 0.0,
         'SupplyingPower': False,
         'ChargingState': False,
         'CurrentSupplied': 0
@@ -29,7 +31,7 @@ PowerSources = [
 
     {
         'SourceName': 'PowerGrid1',
-        'type':'Grid',
+        'type': 'Grid',
         'SupplyingPower': False,
         'PowerCut': True,
         'CurrentSupplied': 0
@@ -39,10 +41,28 @@ PowerSources = [
 ]
 
 Battery1 = next(item for item in PowerSources if item["SourceName"] == 'Battery1')
+SolarPanel = next(item for item in PowerSources if item["SourceName"] == 'SolarPanel1')
 
-#Solar panel Simulator
+
+# Solar panel Simulator
+
+def solarPanel_throughput():
+    hr = time.localtime().tm_hour
+    if hr in range(6, 9) or hr in range(17, 20):
+        SolarPanel['CurrentGenerated'] = 1.2
+    elif hr in range(9, 12) or hr in range(13, 17):
+        SolarPanel['CurrentGenerated'] = 2.5
+    elif hr == 12:
+        SolarPanel['CurrentGenerated'] = 3.8
+    else:
+        SolarPanel['CurrentGenerated'] = 0
+
+    print("Solar panel's current generated: ", SolarPanel['CurrentGenerated'], " kWh.")
 
 
+scheduler = BackgroundScheduler()
+job = scheduler.add_job(solarPanel_throughput, 'interval', minutes=1)
+scheduler.start()
 
 
 @power_app.route('/api', methods=['GET'])
@@ -91,5 +111,6 @@ def powerSupply(source, charge):
         Source1['SupplyingPower'] = False
     return jsonify(PowerSources)
 
+
 if __name__ == '__main__':
-    power_app.run(port=12345)
+    power_app.run(port=12345, use_reloader=False)

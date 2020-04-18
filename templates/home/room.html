@@ -94,6 +94,7 @@
                         <span aria-hidden="true">&times;</span>
                     </a>
                 </div>
+
                 {% if available_devices %}
                     <div class="modal-body">
                         <form method="POST">
@@ -118,10 +119,20 @@
 
     $(document).ready(function () {
 
+<<<<<<< HEAD
         var myChart1 = null;
         var myChart = null;
+=======
+        var myChart = null;
+        var myChart1 = null;
+
+>>>>>>> 3dc7a3224759fc739ee79a75bda7db33aa685b29
 
         liveConsumption_mainGraph = function() {
+
+            if (myChart1 != null){
+                myChart1.destroy();
+            }
 
             var consumptionn = "{{ Consumption }}";
             var dataLabel = JSON.parse(consumptionn);
@@ -143,12 +154,15 @@
             gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
             gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
 
+<<<<<<< HEAD
             if(myChart1 != null){
 
             myChart1.destroy();
 
            }
 
+=======
+>>>>>>> 3dc7a3224759fc739ee79a75bda7db33aa685b29
             myChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -260,6 +274,10 @@
 
             async function chart_devices(room, values, time) {
 
+                if (myChart != null){
+                myChart.destroy();
+            }
+
                 var ctx1 = document.getElementById('EnergyChart').getContext("2d");
                 var chartColor = "#FFFFFF";
 
@@ -270,10 +288,13 @@
                 // gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
                 //gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
 
+<<<<<<< HEAD
                 if(myChart != null){
                   myChart.destroy();
                 }
 
+=======
+>>>>>>> 3dc7a3224759fc739ee79a75bda7db33aa685b29
                 myChart1 = new Chart(ctx1, {
                     type: 'line',
                     responsive: true,
