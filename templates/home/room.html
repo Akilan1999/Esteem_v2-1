@@ -118,6 +118,9 @@
 
     $(document).ready(function () {
 
+        var myChart1 = null;
+        var myChart = null;
+
         liveConsumption_mainGraph = function() {
 
             var consumptionn = "{{ Consumption }}";
@@ -140,7 +143,13 @@
             gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
             gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
 
-            var myChart = new Chart(ctx, {
+            if(myChart1 != null){
+
+            myChart1.destroy();
+
+           }
+
+            myChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: deviceLabel,
@@ -261,7 +270,11 @@
                 // gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
                 //gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
 
-                var myChart1 = new Chart(ctx1, {
+                if(myChart != null){
+                  myChart.destroy();
+                }
+
+                myChart1 = new Chart(ctx1, {
                     type: 'line',
                     responsive: true,
                     data: {
