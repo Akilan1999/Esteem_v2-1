@@ -19,6 +19,6 @@ class AddUser(TemplateView):
             user.groups.add(Group.objects.get(id=group_id))
             messages.success(request, "User created successfully!")
         else:
-            messages.error(request, form.errors)
+            return render(request, self.template_name, {'form': form})
 
         return redirect("add_user")

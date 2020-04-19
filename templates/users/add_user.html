@@ -4,12 +4,69 @@
 {% block page_header_name %}Add New User{% endblock %}
 {% block pagename %}add_user{% endblock %}
 {% block content %}
-    <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-
-       <div class="text-center">
-          <button type="submit" class="btn btn-success">Submit</button>
-       </div>
-  </form>
+    {% block notificationsicon %}{% endblock %}
+    <div class="container">
+        <!-- ============================================================== -->
+        <!-- basic form  -->
+        <!-- ============================================================== -->
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="card">
+                    <h5 class="card-header">Provide User Details</h5>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <p{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}
+                                                        style="list-style: none;">{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                        {% if form.errors %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <div class="alert alert-danger">
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="inputText3" class="col-form-label">Username</label>
+                                {{ form.username }}
+                            </div>
+                            <div class="form-group">
+                                <label for="inputText3" class="col-form-label">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="form-group">
+                                <label for="inputText3" class="col-form-label">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEmail">Email address</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword">Password</label>
+                                {{ form.password1 }}
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword">Confirm Password</label>
+                                {{ form.password2 }}
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1">User Group</label>
+                                {{ form.user_group }}
+                            </div>
+                            <input type="submit" class="btn btn-secondary mt-4" value="Submit"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end basic form  -->
+        <!-- ============================================================== -->
+    </div>
 {% endblock %}
