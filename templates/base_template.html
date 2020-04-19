@@ -44,31 +44,34 @@
                         <li class="nav-item dropdown notification">
                             <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false"><i class="fas fa-fw fa-bell"></i>
-                                {% if messages %}
-                                    <span class="indicator"></span>
-                                {% endif %}</a>
+                                {% block notificationsicon %}
+                                    {% if messages %}
+                                        <span class="indicator"></span>
+                                    {% endif %}</a>
+                                {% endblock %}
                             <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
                                 <li>
                                     <div class="notification-title"> Notification</div>
                                     <div class="notification-list">
                                         <div class="list-group">
-                                            {% if messages %}
-                                                {% for message in messages %}
-                                                    <a href="#"
-                                                       class="list-group-item list-group-item-action active">
-                                                        <div class="notification-info">
-                                                            <div class="notification-list-user-img"><img
-                                                                    src="{% static 'assets/images/avatar-2.jpg' %}"
-                                                                    alt=""
-                                                                    class="user-avatar-md rounded-circle"></div>
-                                                            <div class="notification-list-user-block">{{ message }}
-                                                                <div class="notification-date">2 min ago</div>
+                                            {% block notifications %}
+                                                {% if messages %}
+                                                    {% for message in messages %}
+                                                        <a href="#"
+                                                           class="list-group-item list-group-item-action active">
+                                                            <div class="notification-info">
+                                                                <div class="notification-list-user-img"><img
+                                                                        src="{% static 'assets/images/avatar-2.jpg' %}"
+                                                                        alt=""
+                                                                        class="user-avatar-md rounded-circle"></div>
+                                                                <div class="notification-list-user-block">{{ message }}
+                                                                    <div class="notification-date">2 min ago</div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </a>
-                                                {% endfor %}
-                                            {% endif %}
-
+                                                        </a>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endblock %}
                                         </div>
                                     </div>
                                 </li>
@@ -260,6 +263,7 @@
     </div>
 {% endblock %}
 <script>
+    {#  Script to highlight the page in navbar that the user is currently at  #}
     $(function () {
         var pageName = document.getElementById('_pageName');
         if (pageName != null) {
