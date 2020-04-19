@@ -94,6 +94,29 @@
             <!-- /. metric -->
             <!-- metric -->
 
+            <!-- Comomize size based on pecentage-->
+          <!--  <style>
+              .Cylindre .NiMH {
+                  height: calc(190px * .3);
+               }
+            </style>
+
+            <div class="row justify-content-center">
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="text-muted">Battery</h3>
+                            <div>
+                            </div>
+                            <div class="Cylindre">
+                                <div class="NiMH"></div>
+                                <div class="PPole"></div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+
     <script>
     var ctx = document.getElementById('c3chart_area').getContext('2d');
 
@@ -122,14 +145,22 @@ async function energy_data(data){
 
    var datasets = [];
    var labels = [];
+   var label_flag = 0
 
    for(var i = 0; i < data.length; i++){
      var data_chart = [];
 
      for(var j = 0; j < data[i].data.length; j++){
-       data_chart.push(data[i].data[j].Watts);
+       data_chart.push(data[i].data[j].Watts)
+       if(label_flag == 0){
+         labels.push(data[i].data[j].hour + ":00 - " + data[i].data[j].hour + ":59");
+       }
      }
-     datasets.push({label:data[i].name,borderColor: '#fecf00',pointBorderColor: '#fecf00',pointBackgroundColor: "yellow",pointHoverBackgroundColor: "yellow",pointHoverBorderColor: chartColor,pointBorderWidth: 1,
+     label_flag++;
+
+     rand_color = '#'+Math.floor(Math.random()*16777215).toString(16);
+
+     datasets.push({label:data[i].name,borderColor: rand_color,pointBorderColor: rand_color,pointBackgroundColor: rand_color,pointHoverBackgroundColor: "yellow",pointHoverBorderColor: chartColor,pointBorderWidth: 1,
      pointHoverRadius: 7,pointHoverBorderWidth: 2,pointRadius: 5,fill: true,backgroundColor: gradientFill,borderWidth: 2,data:data_chart})
 
    }
@@ -137,7 +168,7 @@ async function energy_data(data){
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ["0", "1", "2","3","4","5","6","7","8","9","10","11","12","13","14"],
+            labels: labels,
             datasets: datasets
         },
         options: {
