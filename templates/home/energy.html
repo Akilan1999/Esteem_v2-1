@@ -6,7 +6,18 @@
 {% block content %}
     <div class="row justify-content-center">
         <div class="container">
-            <canvas id="c3chart_area"></canvas>
+            <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                    <button onclick="energyChart_live()" class="btn btn-primary ">
+                        <input type="radio" name="options" id="option1" checked>Live
+                    </button>
+                    <button onclick="energyChart_hourly()" class="btn btn-primary">
+                        <input type="radio" name="options" id="option2" > Hourly
+                    </button>
+                    <button class="btn btn-primary">
+                        <input type="radio" name="options" id="option3"> Daily
+                    </button>
+            </div>
+            <canvas id="c3chart_area" height="200" width="300"></canvas>
         </div>
     </div>
     <br>
@@ -118,71 +129,128 @@
             </div>-->
 
     <script>
-    var ctx = document.getElementById('c3chart_area').getContext('2d');
 
-    chartColor = "#FFFFFF";
+    var myChart = null;
+    var myChart1 = null;
 
-    var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
-    gradientStroke.addColorStop(0, '#80b6f4');
-    gradientStroke.addColorStop(1, '#ff8000');
+    function energyChart_live() {
 
-    var gradientFill = ctx.createLinearGradient(0, 200, 0, 50);
-    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
-    gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
-
-
-    jQuery.ajax({
-        url: '/energy_data',
-        success: function (data) {
-          energy_data(data);
-
-        },
-          async: false
-    });
-
-
-async function energy_data(data){
-
-   var datasets = [];
-   var labels = [];
-   var label_flag = 0
-
-   for(var i = 0; i < data.length; i++){
-     var data_chart = [];
-
-     for(var j = 0; j < data[i].data.length; j++){
-       data_chart.push(data[i].data[j].Watts)
-       if(label_flag == 0){
-         labels.push(data[i].data[j].hour + ":00 - " + data[i].data[j].hour + ":59");
-       }
-     }
-     label_flag++;
-
-     rand_color = '#'+Math.floor(Math.random()*16777215).toString(16);
-
-     datasets.push({label:data[i].name,borderColor: rand_color,pointBorderColor: rand_color,pointBackgroundColor: rand_color,pointHoverBackgroundColor: "yellow",pointHoverBorderColor: chartColor,pointBorderWidth: 1,
-     pointHoverRadius: 7,pointHoverBorderWidth: 2,pointRadius: 5,fill: true,backgroundColor: gradientFill,borderWidth: 2,data:data_chart})
-
-   }
-
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: datasets
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
+        if (myChart1 != null){
+            myChart1.destroy();
         }
-    });
+
+        var powerSources = "{{ Power_sources | safe }}";
+        powerSources = powerSources.replace(/'/g, '"');
+        var current = "{{ Current_supplied }}";
+
+        var label = JSON.parse(powerSources);
+        var data = JSON.parse(current);
+
+        console.log(powerSources, current);
+        var ctx = document.getElementById("c3chart_area").getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+
+            data: {
+                labels: label,
+                datasets: [{
+                    backgroundColor: [
+                        '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+                        '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+                        '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+                        '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+                        '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+                        '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+                        '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+                        '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+                        '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+                        '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'
+                    ],
+                    data: data
+                }]
+            },
+            options: {
+                legend: {
+                    display: true
+
+                }
+            }
+
+        });
+
+
+    }
+    energyChart_live();
+
+
+    function energyChart_hourly() {
+
+        jQuery.ajax({
+            url: '/energy_data',
+            success: function (data) {
+                energy_data(data);
+
+            },
+            async: false
+        });
+    }
+
+
+    async function energy_data(data){
+        var ctx = document.getElementById('c3chart_area').getContext('2d');
+        chartColor = "#FFFFFF";
+        var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+        gradientStroke.addColorStop(0, '#80b6f4');
+        gradientStroke.addColorStop(1, '#ff8000');
+        var gradientFill = ctx.createLinearGradient(0, 200, 0, 50);
+        gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+        gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
+
+        var datasets = [];
+        var labels = [];
+        var label_flag = 0
+
+        for(var i = 0; i < data.length; i++){
+            var data_chart = [];
+
+         for(var j = 0; j < data[i].data.length; j++){
+           data_chart.push(data[i].data[j].Watts)
+           if(label_flag == 0){
+             labels.push(data[i].data[j].hour + ":00 - " + data[i].data[j].hour + ":59");
+           }
+         }
+         label_flag++;
+
+         rand_color = '#'+Math.floor(Math.random()*16777215).toString(16);
+
+         datasets.push({label:data[i].name,borderColor: rand_color,pointBorderColor: rand_color,pointBackgroundColor: rand_color,pointHoverBackgroundColor: "yellow",pointHoverBorderColor: chartColor,pointBorderWidth: 1,
+         pointHoverRadius: 7,pointHoverBorderWidth: 2,pointRadius: 5,fill: true,backgroundColor: gradientFill,borderWidth: 2,data:data_chart})
+
+       }
+        if (myChart != null){
+            myChart.destroy();
+        }
+
+        myChart1 = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
 
   }
+
+
     </script>
 
 {% endblock %}

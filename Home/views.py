@@ -381,6 +381,15 @@ class EnergyGeneration(TemplateView):
     template_name = 'home/energy.html'
 
     def get(self, request, *args, **kwargs):
+        
+        powerSources_data = requests.get('http://127.0.0.1:12345/api').json()
+
+        sources, currentSupplied = [], []
+        for s in powerSources_data:
+            sources.append(s['SourceName'])
+            currentSupplied.append(round(s['CurrentSupplied'], 2))
+
+
         # Not secure but working solution
         # EDIT: I have no idea what this is but you can use **kwargs to get url parameters
         type_data = request.GET.get('type_data')
@@ -390,13 +399,16 @@ class EnergyGeneration(TemplateView):
             energy_mode.objects.create(mode_id=type_data)
         # Sending current mode active
         return render(request, self.template_name, {"Energy_mode": energy_mode.objects.all(),
-                                                    "Room": room.objects.all()})
+                                                    "Room": room.objects.all(),
+                                                    "Power_sources": sources,
+                                                    "Current_supplied": currentSupplied})
 
 
 class RoomPage(TemplateView):
     template_name = 'home/room.html'
 
     def get(self, request, *args, **kwargs):
+
         # Try and except for smart plugs in the room
         try:
             plugs_in_room = plugs.objects.filter(room_no=kwargs["room_no"]).order_by("plug_no")
@@ -499,6 +511,8 @@ class Plugs(TemplateView):
 # Sum Data for every Room for now every hour
 class Rooms(TemplateView):
     def get(self, request, *args, **kwargs):
+
+
         room_id = request.GET.get('room_id')
 
         now = datetime.datetime.now()
