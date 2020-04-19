@@ -34,7 +34,7 @@
                                     <h1 class="room-cons-data_{{ room.room_no }} mb-1 text-primary">0.0 </h1>
                                 </div>
                                 <div class="metric-label d-inline-block float-right text-success">
-                                    <i class="fa fa-fw fa-caret-up"></i><span>5.27%</span>
+                                    <i class=" hrChange_i_{{ room.room_no }} fa fa-fw fa-caret-up"></i><span class="hrChange_{{ room.room_no }}">__% </span>
                                 </div>
                             </div>
                             <div id="energy_consumption_{{ rooms.room_no }}"></div>
@@ -477,6 +477,44 @@
                 }
 
             });
+
+            var previousHr = []
+
+            function hourly_change() {
+                var room = [{% for x in Room %}'{{ x.room_no|escapejs }}',{% endfor %}];
+                for(var i = 0; i < room.length;i++){
+                    jQuery.ajax({
+                        url: '/room?room_id='+room[i],
+                        success: function (data) {
+                            var val = Math.round(data[data.length-1]['Watts']/60 * 100) / 100;
+                            previousHr.push(val);
+                        },
+                     async: false
+                    });
+
+                }
+
+                var index = 0
+
+                {% for rooms in Room %}
+                var x = "hrChange_" + "{{ rooms.room_no }}";
+                var xi = "hrChange_i_" + "{{ rooms.room_no }}";
+                var diffPercent = ((consumption_label[index]- previousHr[index])/previousHr[index])*100;
+                if (diffPercent >0){
+                    document.getElementsByClassName(x)[0].style.color = 'red';
+                    document.getElementsByClassName(xi)[0].style.color = 'red';
+                    document.getElementsByClassName(xi)[0].className = document.getElementsByClassName(xi)[0].className.replace( /(?:^|\s)fa-caret-up(?!\S)/g , ' ' )
+                    document.getElementsByClassName(xi)[0].className += "fa-caret-down";
+                }
+                document.getElementsByClassName(x)[0].textContent = Math.round(Math.abs(diffPercent))/100 + "% ";
+                index++;
+                {% endfor %}
+
+            }
+
+            hourly_change();
+
+
         });
     </script>
 {% endblock %}
