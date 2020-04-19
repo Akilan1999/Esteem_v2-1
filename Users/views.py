@@ -3,12 +3,14 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .forms import AddUserForm
 from django.contrib.auth.models import Group
+from Home.models import room
+
 
 class AddUser(TemplateView):
     template_name = 'users/add_user.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, {'form': AddUserForm()})
+        return render(request, self.template_name, {'form': AddUserForm(), 'Room': room.objects.all()})
 
     def post(self, request, *args, **kwargs):
         form = AddUserForm(request.POST)

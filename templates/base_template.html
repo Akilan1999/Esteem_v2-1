@@ -23,6 +23,7 @@
 </head>
 <body>
 {% block main %}
+    {% load custom_tags %}
     <span id="_pageName" style="display:none">{% block pagename %}{% endblock %}</span>
     <!-- ============================================================== -->
     <!-- main wrapper -->
@@ -187,6 +188,21 @@
                                     </ul>
                                 </div>
                             </li>
+                            {% if request.user|has_group:"Admin" %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false"
+                                       data-target="#submenu-4" aria-controls="submenu-4"><i
+                                            class="fas fa-fw fa-chart-pie"></i>Users</a>
+                                    <div id="submenu-4" class="collapse submenu" style="">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a data-link-name="add_user" class="nav-link"
+                                                   href="{% url 'add_user' %}">Add New User</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </nav>
@@ -213,7 +229,6 @@
                                     </li>
                                     <li class="breadcrumb-item active p-2" aria-current="page">
                                         {% block breadcrumb %}{% endblock %}</li>
-                                    {% load custom_tags %}
                                     {% if request.path == '/' %}
                                         <li class="ml-auto p-2"><a class="btn btn-secondary" href="#"
                                                                    data-toggle="modal"
