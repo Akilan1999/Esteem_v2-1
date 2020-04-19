@@ -118,8 +118,8 @@
 
     $(document).ready(function () {
 
-        var myChart1 = null;
         var myChart = null;
+        var myChart1 = null;
 
         liveConsumption_mainGraph = function() {
 
@@ -144,9 +144,7 @@
             gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
 
             if(myChart1 != null){
-
-            myChart1.destroy();
-
+                myChart1.destroy();
            }
 
             myChart = new Chart(ctx, {
@@ -240,6 +238,7 @@
 
         hourlyConsumption_mainGraph = function () {
             room = "{{ Room_in.room_no }}";
+            roomName = "{{ Room_in.room_name }}";
             jQuery.ajax({
                 url: '/room?room_id='+room,
                 success: function (data) {
@@ -280,7 +279,7 @@
                     data: {
                         labels: time,
                         datasets: [{
-                            label: room +" KwH",
+                            label: roomName + " Consumption",
                             borderColor: "#f96332",
                             pointBorderColor: "#FFF",
                             pointBackgroundColor: "#f96332",
