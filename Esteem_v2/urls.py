@@ -20,6 +20,7 @@ from .forms import UpdatedLoginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Home.url')),
+    path('users/', include('Users.url')),
     path('accounts/login/', UpdatedLoginView.as_view()),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
