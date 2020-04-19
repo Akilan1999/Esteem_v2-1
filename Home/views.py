@@ -733,7 +733,7 @@ class RoomsWeekly(TemplateView):
             for j in l:
                 sum += j.Watt
 
-            data = {'date':str(i)+"/"+str(m)+"/"+str(y),'week_day':week_day,'Watt':sum}
+            data = {'date':str(i)+"/"+str(m)+"/"+str(y),'week_day':current_weekday,'Watt':sum}
 
             return_data[1]['current_week'].append(data)
 
