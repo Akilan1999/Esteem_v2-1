@@ -33,8 +33,8 @@ PowerSources = [
         'SourceName': 'PowerGrid1',
         'type': 'Grid',
         'SupplyingPower': False,
-        'PowerCut': True,
-        'CurrentSupplied': 0
+        'PowerCut': False,
+        'CurrentSupplied': 30
 
     }
 
