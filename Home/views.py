@@ -303,6 +303,7 @@ class BackgroundClass:
             if device['status'] == 'on':
                 try:
                     plug_no = plugs.objects.get(plug_name=device['DeviceName'])
+                    print("here")
                     plug_electricity_consumption.objects.create(plug_no=plug_no, Watt=device['ElecConsp'])
                 except plugs.DoesNotExist:
                     plug_no = None
@@ -381,7 +382,7 @@ class EnergyGeneration(TemplateView):
     template_name = 'home/energy.html'
 
     def get(self, request, *args, **kwargs):
-        
+
         powerSources_data = requests.get('http://127.0.0.1:12345/api').json()
 
         sources, currentSupplied = [], []
@@ -495,7 +496,7 @@ class Plugs(TemplateView):
             plug = plugs.objects.get(plug_name=plug_id)
 
             # sum for every hour
-            for i in range(hour):
+            for i in range(hour + 1):
                 sum = 0
                 l = (list(plug_electricity_consumption.objects.filter(plug_no=plug, timestamp__day=day,
                                                                       timestamp__month=month, timestamp__year=year,
@@ -639,3 +640,113 @@ class EnergyDistribution(TemplateView):
         print(hourly_data_tot)
 
         return JsonResponse(hourly_data_tot, safe=False)
+
+class RoomsWeekly(TemplateView):
+    def get(self, request, *args, **kwargs):
+        now = datetime.datetime.now()
+        time = now.time()
+        day = now.day
+        month = now.month
+        year = now.year
+        hour = time.hour
+
+        #Return_data  [{previous_week:[{date:'',weekday:'',KwH:''}]}]
+        return_data = []
+
+        current_date = datetime.date(year, month, day)
+
+        # Previous week range
+        start_date = current_date + datetime.timedelta(-current_date.weekday(), weeks=-1)
+        end_date = current_date + datetime.timedelta(-current_date.weekday() - 1)
+        days_month = current_date.replace(day=28) + datetime.timedelta(days=4)
+
+        i = start_date.day
+        m = start_date.month
+        y = year
+
+        e_date = end_date.day
+        e_month = end_date.month
+
+        return_data.append({'previous_week':[]})
+
+        print(end_date.day)
+        print(i)
+
+        while i != e_date + 1:
+
+            week_day = datetime.datetime(y, m, i).strftime('%A')
+
+            l = (list(plug_electricity_consumption.objects.filter(timestamp__day=i,timestamp__month=m, timestamp__year=y)))
+
+            sum = 0
+
+            for j in l:
+                sum += j.Watt
+
+            data = {'date':str(i)+"/"+str(m)+"/"+str(y),'week_day':week_day,'Watt':sum}
+
+            return_data[0]['previous_week'].append(data)
+
+
+            if days_month == i:
+                i = 1
+                if m == 12:
+                    m = 1
+                    y += 1
+                else:
+                    m += 1
+            else:
+                i+=1
+
+
+        days = [{"weekday":"Monday","value":0},{"weekday":"Tuesday","value":1},{"weekday":"Wednesday","value":2},{"weekday":"Thursday","value":3},
+        {"weekday":"Friday","value":4},{"weekday":"Saturday","value":5},{"weekday":"Sunday","value":6}]
+
+        prev_month = datetime.date(year, (month - 1), day)
+        days_month = prev_month.replace(day=28) + datetime.timedelta(days=4)
+        m = month
+
+        current_weekday = current_date.strftime('%A')
+
+        value = 0
+
+        for i in days:
+            if i["weekday"] == current_weekday:
+                value = i["value"]
+
+        i = int(day)
+        print(value)
+
+        start_week = i - value
+        print(i)
+        print(start_week)
+        return_data.append({'current_week':[]})
+
+
+
+        while i >= start_week:
+            print("here")
+
+            l = (list(plug_electricity_consumption.objects.filter(timestamp__day=i,timestamp__month=m, timestamp__year=y)))
+            sum = 0
+
+            for j in l:
+                sum += j.Watt
+
+            data = {'date':str(i)+"/"+str(m)+"/"+str(y),'week_day':week_day,'Watt':sum}
+
+            return_data[1]['current_week'].append(data)
+
+            i-=1
+
+            if i == 0:
+                i = days_month.day
+                if m == 0:
+                    m = 12
+                    y -= 1
+                else:
+                    m -= 1
+
+
+
+        return JsonResponse(return_data, safe=False)

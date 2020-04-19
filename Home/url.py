@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomePage, EnergyGeneration, RoomPage, Plugs, Rooms, EnergyDistribution
+from .views import HomePage, EnergyGeneration, RoomPage, Plugs, Rooms, EnergyDistribution, RoomsWeekly
 
 urlpatterns = [
     path('', HomePage.as_view(), name='homepage'),
@@ -8,4 +8,5 @@ urlpatterns = [
     path('plug', Plugs.as_view(), name='plug'),
     path('room', Rooms.as_view(), name='room'),
     path('energy_data', EnergyDistribution.as_view(), name='energy_dsitribution'),
+    path('prev_thisweek', RoomsWeekly.as_view(), name='this_prevweek'),
 ]
