@@ -17,7 +17,9 @@
                         <input type="radio" name="options" id="option3"> Daily
                     </button>
             </div>
-            <canvas id="c3chart_area" height="200" width="300"></canvas>
+            <div>
+                <canvas id="mainChart" height="200px" width="300px"></canvas>
+            </div>
         </div>
     </div>
     <br>
@@ -135,9 +137,7 @@
 
     function energyChart_live() {
 
-        if (myChart1 != null){
-            myChart1.destroy();
-        }
+
 
         var powerSources = "{{ Power_sources | safe }}";
         powerSources = powerSources.replace(/'/g, '"');
@@ -147,7 +147,12 @@
         var data = JSON.parse(current);
 
         console.log(powerSources, current);
-        var ctx = document.getElementById("c3chart_area").getContext('2d');
+
+        if (myChart1 != null){
+            myChart1.destroy();
+        }
+
+        var ctx = document.getElementById("mainChart").getContext('2d');
         myChart = new Chart(ctx, {
             type: 'doughnut',
 
@@ -197,7 +202,7 @@
 
 
     async function energy_data(data){
-        var ctx = document.getElementById('c3chart_area').getContext('2d');
+        var ctx = document.getElementById('mainChart').getContext('2d');
         chartColor = "#FFFFFF";
         var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
         gradientStroke.addColorStop(0, '#80b6f4');
