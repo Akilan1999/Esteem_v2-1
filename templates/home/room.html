@@ -6,7 +6,7 @@
 {% block content %}
     <div class="container-fluid">
         <div class="card">
-            <h5 class="card-header">Area Chart</h5>
+            <h5 class="card-header">Charts</h5>
             <div>
                 <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
                     <button onclick="liveConsumption_mainGraph()" class="btn btn-primary ">
@@ -41,8 +41,11 @@
                                     <form method="POST">
                                         {% csrf_token %}
                                         <input type="hidden" name="plug_no" value="{{ plug.plug_no }}"/>
+                                          {% load custom_tags %}
+                                          {% if request.user|has_group:"Admin" %}
                                         <input type="submit" name="remove_device" value="Remove Device"
                                                class="dropdown-item"/>
+                                          {% endif %}
                                     </form>
                                 </div>
                             </div>

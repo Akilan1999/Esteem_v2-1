@@ -18,7 +18,7 @@
                     </button>
             </div>
             <div>
-                <canvas id="mainChart" height="200px" width="300px"></canvas>
+                <canvas id="mainChart" height="100px" width="200px"></canvas>
             </div>
         </div>
     </div>
@@ -33,6 +33,7 @@
                         <h5>Does not pull any power from battery unless there is power cut and renewable sources do not generate enough power.  </h5>
                     </div>
                     {% load custom_tags %}
+                      {% if request.user|has_group:"Admin" %}
                               {% for obj in Energy_mode %}
                               {% if obj.mode_id == "e1"%}
                               <button type="button"
@@ -46,8 +47,8 @@
                                       Enable
                               </button>
                               {% endif %}
-
                               {% endfor %}
+                              {% endif %}
                 </div>
             </div>
         </div>
@@ -59,6 +60,7 @@
                         <h5> House is powered with self sufficient resources such as battery and renewable sources.  </h5>
                     </div>
                     {% load custom_tags %}
+                    {% if request.user|has_group:"Admin" %}
                               {% for obj in Energy_mode %}
                               {% if obj.mode_id == "e2"%}
                               <button type="button"
@@ -74,6 +76,7 @@
                               {% endif %}
 
                               {% endfor %}
+                              {% endif %}
                 </div>
             </div>
         </div>
@@ -85,6 +88,7 @@
                         <h5> Power is only pulled from the Grid </h5>
                     </div>
                     {% load custom_tags %}
+                    {% if request.user|has_group:"Admin" %}
                               {% for obj in Energy_mode %}
                               {% if obj.mode_id == "e3"%}
                               <button type="button"
@@ -100,6 +104,7 @@
                               {% endif %}
 
                               {% endfor %}
+                              {% endif %}
                 </div>
             </div>
         </div>
@@ -115,19 +120,16 @@
             </style>
 
             <div class="row justify-content-center">
-                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <!--<div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
                     <div class="card">
                         <div class="card-body">
                             <h3 class="text-muted">Battery</h3>
+                            <p>lol</p>
                             <div>
                             </div>
-                            <div class="Cylindre">
-                                <div class="NiMH"></div>
-                                <div class="PPole"></div>
-                                </div>
                         </div>
                     </div>
-                </div>
+                </div>-->
             </div>
 
     <script>
@@ -213,7 +215,20 @@
 
         var datasets = [];
         var labels = [];
-        var label_flag = 0
+        var label_flag = 0;
+
+        backgroundColor= [
+            '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+            '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+            '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+            '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+            '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+            '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+            '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+            '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+            '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+            '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'
+        ];
 
         for(var i = 0; i < data.length; i++){
             var data_chart = [];
@@ -228,7 +243,7 @@
 
          rand_color = '#'+Math.floor(Math.random()*16777215).toString(16);
 
-         datasets.push({label:data[i].name,borderColor: rand_color,pointBorderColor: rand_color,pointBackgroundColor: rand_color,pointHoverBackgroundColor: "yellow",pointHoverBorderColor: chartColor,pointBorderWidth: 1,
+         datasets.push({label:data[i].name,borderColor: backgroundColor[i],pointBorderColor: backgroundColor[i],pointBackgroundColor: backgroundColor[i],pointHoverBackgroundColor: backgroundColor[i],pointHoverBorderColor: chartColor,pointBorderWidth: 1,
          pointHoverRadius: 7,pointHoverBorderWidth: 2,pointRadius: 5,fill: true,backgroundColor: gradientFill,borderWidth: 2,data:data_chart})
 
        }

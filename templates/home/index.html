@@ -23,8 +23,11 @@
                                         <form method="POST">
                                             {% csrf_token %}
                                             <input type="hidden" name="room_no" value="{{ room.room_no }}"/>
+                                            {% load custom_tags %}
+                                            {% if request.user|has_group:"Admin" %}
                                             <input type="submit" name="remove_room" value="Remove Room"
                                                    class="dropdown-item"/>
+                                            {% endif %}
                                         </form>
                                     </div>
                                 </div>
