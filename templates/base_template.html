@@ -229,11 +229,11 @@
                                     </li>
                                     <li class="breadcrumb-item active p-2" aria-current="page">
                                         {% block breadcrumb %}{% endblock %}</li>
-                                    {% if request.path == '/' %}
+                                    {% if request.path == '/' and request.user|has_group:"Admin" %}
                                         <li class="ml-auto p-2"><a class="btn btn-secondary" href="#"
                                                                    data-toggle="modal"
                                                                    data-target="#addRoom">Add Room</a></li>
-                                    {% elif request|path_contains:'room' %}
+                                    {% elif request|path_contains:'room' and request.user|has_group:"Admin" %}
                                         <li class="ml-auto p-2"><a class="btn btn-secondary" href="#"
                                                                    data-toggle="modal"
                                                                    data-target="#addDevice">Add Device</a></li>
