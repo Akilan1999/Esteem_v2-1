@@ -64,25 +64,29 @@ class BackgroundClass:
 
                 if j["type"] == "Battery":
                     if j["BatteryPercentage"] != 100:
-                        power_transaction.objects.create(e_id=e_name,transfer= -abs(battery_wire_capacity))
-                        #Battery Pulled from energy sources
-                        requests.get("http://127.0.0.1:12345/api/batterycharge/"+str(float(battery_wire_capacity))).json()
+                        power_transaction.objects.create(e_id=e_name, transfer=-abs(battery_wire_capacity))
+                        # Battery Pulled from energy sources
+                        requests.get(
+                            "http://127.0.0.1:12345/api/batterycharge/" + str(float(battery_wire_capacity))).json()
                         energy_taken += battery_wire_capacity
 
                 if j["type"] == "EnergyGenerator":
                     if j['CurrentGenerated'] <= energy_taken:
-                        power_transaction.objects.create(e_id=e_name,transfer= j['CurrentGenerated'])
-                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(j['CurrentGenerated']))).json()
+                        power_transaction.objects.create(e_id=e_name, transfer=j['CurrentGenerated'])
+                        requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                            float(j['CurrentGenerated']))).json()
                         energy_taken -= j['CurrentGenerated']
                     else:
-                        power_transaction.objects.create(e_id=e_name,transfer= energy_taken)
-                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
+                        power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                        requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                            float(energy_taken))).json()
                         energy_taken = 0
                 if j["type"] == "Grid":
                     print(j["PowerCut"])
                     if energy_taken != 0 and j["PowerCut"] == False and j["CurrentSupplied"] >= energy_taken:
-                        power_transaction.objects.create(e_id=e_name,transfer= energy_taken)
-                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
+                        power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                        requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                            float(energy_taken))).json()
                         energy_taken = 0
 
                     elif j["PowerCut"]:
@@ -91,29 +95,39 @@ class BackgroundClass:
                                 e_name_level_1 = energy_generation.objects.get(name=k["SourceName"])
 
                                 if k['CurrentGenerated'] <= energy_taken:
-                                    power_transaction.objects.create(e_id=e_name_level_1 ,transfer= k['CurrentGenerated'])
-                                    requests.get("http://127.0.0.1:12345/api/givepower/"+k["SourceName"]+"/"+str(float(k['CurrentGenerated']))).json()
+                                    power_transaction.objects.create(e_id=e_name_level_1,
+                                                                     transfer=k['CurrentGenerated'])
+                                    requests.get("http://127.0.0.1:12345/api/givepower/" + k["SourceName"] + "/" + str(
+                                        float(k['CurrentGenerated']))).json()
                                     energy_taken -= k['CurrentGenerated']
                                 else:
-                                    power_transaction.objects.create(e_id=e_name,transfer= energy_taken)
-                                    requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
+                                    power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                                    requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                                        float(energy_taken))).json()
                                     energy_taken = 0
                             elif k["type"] == "Battery":
 
-                                    if k["RemainingCapacity"] <= battery_wire_capacity and k["RemainingCapacity"] <= energy_taken:
-                                       power_transaction.objects.create(e_id=e_name_level_1,transfer= battery_wire_capacity)
-                                       requests.get("http://127.0.0.1:12345/api/batterydischarge/"+str(float(battery_wire_capacity))).json()
-                                       energy_taken -= battery_wire_capacity
+                                if k["RemainingCapacity"] <= battery_wire_capacity and k[
+                                    "RemainingCapacity"] <= energy_taken:
+                                    power_transaction.objects.create(e_id=e_name_level_1,
+                                                                     transfer=battery_wire_capacity)
+                                    requests.get("http://127.0.0.1:12345/api/batterydischarge/" + str(
+                                        float(battery_wire_capacity))).json()
+                                    energy_taken -= battery_wire_capacity
 
-                                    elif k["RemainingCapacity"] <= energy_taken:
-                                       power_transaction.objects.create(e_id=e_name_level_1,transfer= k["RemainingCapacity"])
-                                       requests.get("http://127.0.0.1:12345/api/batterydischarge/"+str(float(k["RemainingCapacity"]))).json()
-                                       energy_taken -= k["RemainingCapacity"]
+                                elif k["RemainingCapacity"] <= energy_taken:
+                                    power_transaction.objects.create(e_id=e_name_level_1,
+                                                                     transfer=k["RemainingCapacity"])
+                                    requests.get("http://127.0.0.1:12345/api/batterydischarge/" + str(
+                                        float(k["RemainingCapacity"]))).json()
+                                    energy_taken -= k["RemainingCapacity"]
 
-                                    elif k["RemainingCapacity"] <= battery_wire_capacity and k["RemainingCapacity"] > energy_taken:
-                                       power_transaction.objects.create(e_id=e_name_level_1,transfer= energy_taken)
-                                       requests.get("http://127.0.0.1:12345/api/batterydischarge/"+str(float(energy_taken))).json()
-                                       energy_taken -= energy_taken
+                                elif k["RemainingCapacity"] <= battery_wire_capacity and k[
+                                    "RemainingCapacity"] > energy_taken:
+                                    power_transaction.objects.create(e_id=e_name_level_1, transfer=energy_taken)
+                                    requests.get("http://127.0.0.1:12345/api/batterydischarge/" + str(
+                                        float(energy_taken))).json()
+                                    energy_taken -= energy_taken
 
         ## ----------------------------- Self Powered mode -----------------------------------
 
@@ -130,33 +144,38 @@ class BackgroundClass:
 
                 if j["type"] == "EnergyGenerator":
                     if j['CurrentGenerated'] <= energy_taken:
-                        power_transaction.objects.create(e_id=e_name,transfer= j['CurrentGenerated'])
-                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(j['CurrentGenerated']))).json()
+                        power_transaction.objects.create(e_id=e_name, transfer=j['CurrentGenerated'])
+                        requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                            float(j['CurrentGenerated']))).json()
                         energy_taken -= j['CurrentGenerated']
                     else:
-                        power_transaction.objects.create(e_id=e_name,transfer= energy_taken)
-                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
+                        power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                        requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                            float(energy_taken))).json()
                         energy_taken = 0
 
             # Running for all battery Set Precentage to not pull from 30
             for j in energy_devices:
                 if j["type"] == "Battery":
-                    if j["BatteryPercentage"] > 30 and j['RemainingCapacity'] >= energy_taken and energy_taken >= battery_wire_capacity:
-                        power_transaction.objects.create(e_id=e_name,transfer= battery_wire_capacity)
-                        #Battery Pulled from energy sources
-                        requests.get("http://127.0.0.1:12345/api/batterydischarge/"+str(float(battery_wire_capacity))).json()
+                    if j["BatteryPercentage"] > 30 and j[
+                        'RemainingCapacity'] >= energy_taken and energy_taken >= battery_wire_capacity:
+                        power_transaction.objects.create(e_id=e_name, transfer=battery_wire_capacity)
+                        # Battery Pulled from energy sources
+                        requests.get(
+                            "http://127.0.0.1:12345/api/batterydischarge/" + str(float(battery_wire_capacity))).json()
                         energy_taken -= battery_wire_capacity
                         print(energy_taken)
-                    elif j["BatteryPercentage"] > 30 and j['RemainingCapacity'] >= energy_taken and energy_taken <= battery_wire_capacity:
-                        power_transaction.objects.create(e_id=e_name,transfer= energy_taken)
-                        #Battery Pulled from energy sources
-                        requests.get("http://127.0.0.1:12345/api/batterydischarge/"+str(float(energy_taken))).json()
+                    elif j["BatteryPercentage"] > 30 and j[
+                        'RemainingCapacity'] >= energy_taken and energy_taken <= battery_wire_capacity:
+                        power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                        # Battery Pulled from energy sources
+                        requests.get("http://127.0.0.1:12345/api/batterydischarge/" + str(float(energy_taken))).json()
                         energy_taken -= energy_taken
                         print(energy_taken)
                     else:
-                        power_transaction.objects.create(e_id=e_name,transfer= -abs(battery_wire_capacity))
-                        #Battery Pulled from energy sources
-                        requests.get("http://127.0.0.1:12345/api/batterycharge/"+str(float(energy_taken))).json()
+                        power_transaction.objects.create(e_id=e_name, transfer=-abs(battery_wire_capacity))
+                        # Battery Pulled from energy sources
+                        requests.get("http://127.0.0.1:12345/api/batterycharge/" + str(float(energy_taken))).json()
                         energy_taken += energy_taken
                         print(energy_taken)
 
@@ -164,8 +183,9 @@ class BackgroundClass:
 
                 if j["type"] == "Grid":
                     if energy_taken != 0 and j["PowerCut"] == False and j["CurrentSupplied"] >= energy_taken:
-                        power_transaction.objects.create(e_id=e_name,transfer= energy_taken)
-                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
+                        power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                        requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                            float(energy_taken))).json()
                         energy_taken = 0
 
                     elif j["PowerCut"] == True:
@@ -176,19 +196,22 @@ class BackgroundClass:
                                 e_name_level_1 = energy_generation.objects.get(name=k["SourceName"])
 
                                 if k['CurrentGenerated'] <= energy_taken:
-                                    power_transaction.objects.create(e_id=e_name_level_1 ,transfer= k['CurrentGenerated'])
-                                    requests.get("http://127.0.0.1:12345/api/givepower/"+k["SourceName"]+"/"+str(float(k['CurrentGenerated']))).json()
+                                    power_transaction.objects.create(e_id=e_name_level_1,
+                                                                     transfer=k['CurrentGenerated'])
+                                    requests.get("http://127.0.0.1:12345/api/givepower/" + k["SourceName"] + "/" + str(
+                                        float(k['CurrentGenerated']))).json()
                                     energy_taken -= k['CurrentGenerated']
                                 else:
-                                    power_transaction.objects.create(e_id=e_name,transfer= energy_taken)
-                                    requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
+                                    power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                                    requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                                        float(energy_taken))).json()
                                     energy_taken = 0
 
                             elif k["type"] == "Battery":
                                 if k["RemainingCapacity"] <= battery_wire_capacity and k[
                                     "RemainingCapacity"] <= energy_taken:
                                     power_transaction.objects.create(e_id=e_name_level_1,
-                                                                     transfer= battery_wire_capacity)
+                                                                     transfer=battery_wire_capacity)
                                     requests.get(
                                         "http://127.0.0.1:12345/api/batterydischarge/" + battery_wire_capacity).json()
                                     energy_taken -= battery_wire_capacity
@@ -198,7 +221,8 @@ class BackgroundClass:
                                     requests.get(
                                         "http://127.0.0.1:12345/api/batterydischarge/" + k["RemainingCapacity"]).json()
                                     energy_taken -= k["RemainingCapacity"]
-                                elif k["RemainingCapacity"] <= battery_wire_capacity and k["RemainingCapacity"] > energy_taken:
+                                elif k["RemainingCapacity"] <= battery_wire_capacity and k[
+                                    "RemainingCapacity"] > energy_taken:
                                     power_transaction.objects.create(e_id=e_name_level_1, transfer=energy_taken)
                                     requests.get("http://127.0.0.1:12345/api/batterydischarge/" + energy_taken).json()
                                     energy_taken -= energy_taken
@@ -217,8 +241,9 @@ class BackgroundClass:
 
                 if j["type"] == "Grid":
                     if energy_taken != 0 and j["PowerCut"] == False and j["CurrentSupplied"] >= energy_taken:
-                        power_transaction.objects.create(e_id=e_name,transfer= energy_taken)
-                        requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
+                        power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                        requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                            float(energy_taken))).json()
                         energy_taken = 0
 
                     elif j["PowerCut"] == True:
@@ -228,38 +253,40 @@ class BackgroundClass:
                                 e_name_level_1 = energy_generation.objects.get(name=k["SourceName"])
 
                                 if k['CurrentGenerated'] <= energy_taken:
-                                    power_transaction.objects.create(e_id=e_name_level_1 ,transfer= k['CurrentGenerated'])
-                                    requests.get("http://127.0.0.1:12345/api/givepower/"+k["SourceName"]+"/"+str(float(k['CurrentGenerated']))).json()
+                                    power_transaction.objects.create(e_id=e_name_level_1,
+                                                                     transfer=k['CurrentGenerated'])
+                                    requests.get("http://127.0.0.1:12345/api/givepower/" + k["SourceName"] + "/" + str(
+                                        float(k['CurrentGenerated']))).json()
                                     energy_taken -= k['CurrentGenerated']
                                 else:
-                                    power_transaction.objects.create(e_id=e_name,transfer= energy_taken)
-                                    requests.get("http://127.0.0.1:12345/api/givepower/"+j["SourceName"]+"/"+str(float(energy_taken))).json()
+                                    power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                                    requests.get("http://127.0.0.1:12345/api/givepower/" + j["SourceName"] + "/" + str(
+                                        float(energy_taken))).json()
                                     energy_taken = 0
 
                             elif k["type"] == "Battery":
                                 if k["RemainingCapacity"] <= battery_wire_capacity and k[
                                     "RemainingCapacity"] <= energy_taken:
                                     power_transaction.objects.create(e_id=e_name_level_1,
-                                                                     transfer= battery_wire_capacity)
+                                                                     transfer=battery_wire_capacity)
                                     requests.get(
                                         "http://127.0.0.1:12345/api/batterydischarge/" + battery_wire_capacity).json()
                                     energy_taken -= battery_wire_capacity
                                 elif k["RemainingCapacity"] <= energy_taken:
                                     power_transaction.objects.create(e_id=e_name_level_1,
-                                                                     transfer= k["RemainingCapacity"])
+                                                                     transfer=k["RemainingCapacity"])
                                     requests.get(
                                         "http://127.0.0.1:12345/api/batterydischarge/" + k["RemainingCapacity"]).json()
                                     energy_taken -= k["RemainingCapacity"]
                                 elif k["RemainingCapacity"] <= battery_wire_capacity and k[
                                     "RemainingCapacity"] > energy_taken:
-                                    power_transaction.objects.create(e_id=e_name_level_1, transfer= energy_taken)
+                                    power_transaction.objects.create(e_id=e_name_level_1, transfer=energy_taken)
                                     requests.get("http://127.0.0.1:12345/api/batterydischarge/" + energy_taken).json()
                                     energy_taken -= energy_taken
 
-
         ##-------------------------------------- Delete hourly data at the end of the day -----------------------------------------
 
-        #------------ First we need to to get sum of all energy devices ---------------
+        # ------------ First we need to to get sum of all energy devices ---------------
 
         now = datetime.datetime.now()
         time = now.time()
@@ -276,23 +303,20 @@ class BackgroundClass:
             energy = energy_generation.objects.all()
 
             for i in energy:
-                transactions = power_transaction.objects.filter(e_id=i,timestamp__day=day,timestamp__month=month,timestamp__year=year)
+                transactions = power_transaction.objects.filter(e_id=i, timestamp__day=day, timestamp__month=month,
+                                                                timestamp__year=year)
                 sum = 0
                 for k in transactions:
                     sum += k.transfer
 
-                #Deletes all data of that plug
-                power_transaction.objects.filter(e_id=i,timestamp__day=day,timestamp__month=month,timestamp__year=year).delete()
+                # Deletes all data of that plug
+                power_transaction.objects.filter(e_id=i, timestamp__day=day, timestamp__month=month,
+                                                 timestamp__year=year).delete()
 
-                #Adds the total power back
-                power_transaction.objects.create(e_id=i,transfer=sum)
+                # Adds the total power back
+                power_transaction.objects.create(e_id=i, transfer=sum)
 
                 print("data deleted")
-
-
-
-
-
 
     @staticmethod
     def device_consumption():
@@ -320,19 +344,17 @@ class BackgroundClass:
             plug = plugs.objects.all()
 
             for i in plug:
-              consumption = plug_electricity_consumption.objects.filter(plug_no = i,timestamp__day=day,timestamp__month=month,timestamp__year=year)
-              sum = 0
+                consumption = plug_electricity_consumption.objects.filter(plug_no=i, timestamp__day=day,
+                                                                          timestamp__month=month, timestamp__year=year)
+                sum = 0
 
-              for j in consumption:
-                  sum += j.Watt
+                for j in consumption:
+                    sum += j.Watt
 
-              plug_electricity_consumption.objects.filter(plug_no = i,timestamp__day=day,timestamp__month=month,timestamp__year=year).delete()
+                plug_electricity_consumption.objects.filter(plug_no=i, timestamp__day=day, timestamp__month=month,
+                                                            timestamp__year=year).delete()
 
-              plug_electricity_consumption.objects.create(plug_no = i,Watt = sum)
-
-
-
-
+                plug_electricity_consumption.objects.create(plug_no=i, Watt=sum)
 
 
 class HomePage(TemplateView):
@@ -365,8 +387,31 @@ class HomePage(TemplateView):
         for i in range(len(room_consumptions)):
             room_consumptions[i] = round(room_consumptions[i], 3)
 
+        powerData = requests.get("http://127.0.0.1:12345/api").json()
+        batteries, solarpanels, grids = [], [], []
+
+        for i in range(len(powerData)):
+
+            powerData[i]['SupplyingPower'] = int(powerData[i]['SupplyingPower'])
+            powerData[i]['CurrentSupplied'] = round(powerData[i]['CurrentSupplied'], 2)
+            if powerData[i]['type'] == 'Battery':
+                powerData[i]['ChargingState'] = int(powerData[i]['ChargingState'])
+                batteries.append(powerData[i])
+
+            elif powerData[i]['type'] == 'EnergyGenerator':
+                solarpanels.append(powerData[i])
+                powerData[i]['ChargingState'] = int(powerData[i]['ChargingState'])
+
+            elif powerData[i]['type'] == 'Grid':
+                grids.append(powerData[i])
+                powerData[i]['PowerCut'] = int(powerData[i]['PowerCut'])
+
+            else:
+                print("No power source connected")
+
         return render(request, self.template_name,
-                      {"Room": room.objects.all(), "name_rooms": room_names, "consumption_rooms": room_consumptions}, )
+                      {"Room": room.objects.all(), "name_rooms": room_names, "consumption_rooms": room_consumptions,
+                       "Battery": batteries, "Solarpanel": solarpanels, "Grid": grids},)
 
     def post(self, request, *args, **kwargs):
         if 'remove_room' in request.POST:
@@ -388,7 +433,6 @@ class EnergyGeneration(TemplateView):
         for s in powerSources_data:
             sources.append(s['SourceName'])
             currentSupplied.append(round(s['CurrentSupplied'], 2))
-
 
         # Not secure but working solution
         # EDIT: I have no idea what this is but you can use **kwargs to get url parameters
@@ -511,7 +555,6 @@ class Plugs(TemplateView):
 # Sum Data for every Room for now every hour
 class Rooms(TemplateView):
     def get(self, request, *args, **kwargs):
-
 
         room_id = request.GET.get('room_id')
 
@@ -640,6 +683,7 @@ class EnergyDistribution(TemplateView):
 
         return JsonResponse(hourly_data_tot, safe=False)
 
+
 class RoomsWeekly(TemplateView):
     def get(self, request, *args, **kwargs):
         now = datetime.datetime.now()
@@ -649,7 +693,7 @@ class RoomsWeekly(TemplateView):
         year = now.year
         hour = time.hour
 
-        #Return_data  [{previous_week:[{date:'',weekday:'',KwH:''}]}]
+        # Return_data  [{previous_week:[{date:'',weekday:'',KwH:''}]}]
         return_data = []
 
         current_date = datetime.date(year, month, day)
@@ -666,7 +710,7 @@ class RoomsWeekly(TemplateView):
         e_date = end_date.day
         e_month = end_date.month
 
-        return_data.append({'previous_week':[]})
+        return_data.append({'previous_week': []})
 
         print(end_date.day)
         print(i)
@@ -675,17 +719,17 @@ class RoomsWeekly(TemplateView):
 
             week_day = datetime.datetime(y, m, i).strftime('%A')
 
-            l = (list(plug_electricity_consumption.objects.filter(timestamp__day=i,timestamp__month=m, timestamp__year=y)))
+            l = (list(
+                plug_electricity_consumption.objects.filter(timestamp__day=i, timestamp__month=m, timestamp__year=y)))
 
             sum = 0
 
             for j in l:
                 sum += j.Watt
 
-            data = {'date':str(i)+"/"+str(m)+"/"+str(y),'week_day':week_day,'Watt':sum}
+            data = {'date': str(i) + "/" + str(m) + "/" + str(y), 'week_day': week_day, 'Watt': sum}
 
             return_data[0]['previous_week'].append(data)
-
 
             if days_month == i:
                 i = 1
@@ -695,11 +739,12 @@ class RoomsWeekly(TemplateView):
                 else:
                     m += 1
             else:
-                i+=1
+                i += 1
 
-
-        days = [{"weekday":"Monday","value":0},{"weekday":"Tuesday","value":1},{"weekday":"Wednesday","value":2},{"weekday":"Thursday","value":3},
-        {"weekday":"Friday","value":4},{"weekday":"Saturday","value":5},{"weekday":"Sunday","value":6}]
+        days = [{"weekday": "Monday", "value": 0}, {"weekday": "Tuesday", "value": 1},
+                {"weekday": "Wednesday", "value": 2}, {"weekday": "Thursday", "value": 3},
+                {"weekday": "Friday", "value": 4}, {"weekday": "Saturday", "value": 5},
+                {"weekday": "Sunday", "value": 6}]
 
         prev_month = datetime.date(year, (month - 1), day)
         days_month = prev_month.replace(day=28) + datetime.timedelta(days=4)
@@ -719,24 +764,23 @@ class RoomsWeekly(TemplateView):
         start_week = i - value
         print(i)
         print(start_week)
-        return_data.append({'current_week':[]})
-
-
+        return_data.append({'current_week': []})
 
         while i >= start_week:
             print("here")
 
-            l = (list(plug_electricity_consumption.objects.filter(timestamp__day=i,timestamp__month=m, timestamp__year=y)))
+            l = (list(
+                plug_electricity_consumption.objects.filter(timestamp__day=i, timestamp__month=m, timestamp__year=y)))
             sum = 0
 
             for j in l:
                 sum += j.Watt
 
-            data = {'date':str(i)+"/"+str(m)+"/"+str(y),'week_day':current_weekday,'Watt':sum}
+            data = {'date': str(i) + "/" + str(m) + "/" + str(y), 'week_day': current_weekday, 'Watt': sum}
 
-            return_data[1]['current_week'].insert(0,data)
+            return_data[1]['current_week'].insert(0, data)
 
-            i-=1
+            i -= 1
 
             if i == 0:
                 i = days_month.day
@@ -745,7 +789,5 @@ class RoomsWeekly(TemplateView):
                     y -= 1
                 else:
                     m -= 1
-
-
 
         return JsonResponse(return_data, safe=False)

@@ -37,7 +37,7 @@
                                     <h1 class="room-cons-data_{{ room.room_no }} mb-1 text-primary">0.0 </h1>
                                 </div>
                                 <div class="metric-label d-inline-block float-right text-success">
-                                    <i class=" hrChange_i_{{ room.room_no }} fa fa-fw fa-caret-up"></i><span class="hrChange_{{ room.room_no }}">__% </span>
+                                    <i class=" hrChange_i_{{ room.room_no }} fa fa-fw fa-caret-down"></i><span class="hrChange_{{ room.room_no }}">__% </span>
                                 </div>
                             </div>
                             <div id="energy_consumption_{{ rooms.room_no }}"></div>
@@ -114,6 +114,110 @@
             <!-- end total sale  -->
             <!-- ============================================================== -->
         </div>
+        <div class="row">
+
+        {% if Battery %}
+            {% for battery in Battery %}
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="card">
+                        <div class="card-header d-flex">
+                            <h4 class="mb-0">{{ battery.SourceName }}</h4>
+                        </div>
+                        <div class="card-body">
+                                <p>
+                                    <span class="fa-xs text-primary mr-1 legend-title"></span><span class="legend-text"> Battery Percentage</span>
+                                    <span class="float-right">{{ battery.BatteryPercentage }}%</span>
+                                </p>
+                                <p>
+                                    <span class="fa-xs text-secondary mr-1 legend-title"></span>
+                                    <span class="legend-text">Charging</span>
+                                    <span class="float-right">{% if battery.ChargingState%} Yes {% else %} No {% endif %}</span>
+                                </p>
+                                <p>
+                                    <span class="fa-xs text-brand mr-1 legend-title"></span> <span class="legend-text">Supplying Power</span>
+                                    <span class="float-right">{% if battery.SupplyingPower%} Yes {% else %} No {% endif %}</span>
+                                </p>
+                                <p>
+                                    <span class="fa-xs text-info mr-1 legend-title"></span> <span class="legend-text">Total Supplied</span>
+                                    <span class="float-right">{{ battery.CurrentSupplied }} kWh</span>
+                                </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if Solarpanel %}
+                {% for solarpanel in Solarpanel %}
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-header d-flex">
+                                <h4 class="mb-0">{{ solarpanel.SourceName }}</h4>
+                            </div>
+                            <div class="card-body">
+                                    <p>
+                                        <span class="fa-xs text-primary mr-1 legend-title"></span><span class="legend-text"> Current Production</span>
+                                        <span class="float-right">{{ solarpanel.CurrentGenerated}}</span>
+                                    </p>
+                                    <p>
+                                        <span class="fa-xs text-secondary mr-1 legend-title"></span>
+                                        <span class="legend-text">Charging</span>
+                                        <span class="float-right">{% if solarpanel.ChargingState%} Yes {% else %} No {% endif %}</span>
+                                    </p>
+                                    <p>
+                                        <span class="fa-xs text-brand mr-1 legend-title"></span> <span class="legend-text">Supplying Power</span>
+                                        <span class="float-right">{% if solarpanel.SupplyingPower%} Yes {% else %} No {% endif %}</span>
+                                    </p>
+                                    <p>
+                                        <span class="fa-xs text-info mr-1 legend-title"></span> <span class="legend-text">Total Supplied</span>
+                                        <span class="float-right">{{ solarpanel.CurrentSupplied}} kWh</span>
+                                    </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if Grid %}
+                {% for grid in Grid %}
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-header d-flex">
+                                <h4 class="mb-0">{{ grid.SourceName }}</h4>
+                            </div>
+                            <div class="card-body">
+                                    <p>
+                                        <span class="fa-xs text-primary mr-1 legend-title"></span><span class="legend-text"> Supplier</span>
+                                        <span class="float-right">DEWA</span>
+                                    </p>
+                                    <p>
+                                        <span class="fa-xs text-info mr-1 legend-title"></span> <span class="legend-text">Power Cut</span>
+                                        <span class="float-right">{% if grid.PowerCut%} Yes {% else %} No {% endif %}</span>
+                                    </p>
+                                    <p>
+                                        <span class="fa-xs text-brand mr-1 legend-title"></span> <span class="legend-text">Supplying Power</span>
+                                        <span class="float-right">{% if grid.SupplyingPower%} Yes {% else %} No {% endif %}</span>
+                                    </p>
+                                    <p>
+                                        <span class="fa-xs text-info mr-1 legend-title"></span> <span class="legend-text">Total Supplied</span>
+                                        <span class="float-right">{{ grid.CurrentSupplied}} kWh</span>
+                                    </p>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+         </div>
+
+
+
+
+
+
+
+
+
 {#        <div class="row">#}
 {#            <!-- ============================================================== -->#}
 {#            <!-- top selling products  -->#}
@@ -402,6 +506,7 @@
 {#            <!-- end sales traffice country source  -->#}
 {#            <!-- ============================================================== -->#}
 {#        </div>#}
+
     </div>
     <!-- ============================================================== -->
     <!-- modal  -->
@@ -432,187 +537,197 @@
     </div>
 
     <script>
-        $(document).ready(function () {
-            var maingraph_consumptions = "{{ consumption_rooms }}";
-            var consumption_label = JSON.parse(maingraph_consumptions);
-            var i = 0
+{#        {% load custom_tags %}#}
+
+    var battery = {{ Battery.0.BatteryPercentage | safe }};
+    var solarpanel = {{ Solarpanel | safe }};
+    var grid = {{ Grid | safe }};
+
+    {#console.log(battery[0]['SourceName']);#}
+    console.log(battery);
+
+
+    $(document).ready(function () {
+        var maingraph_consumptions = "{{ consumption_rooms }}";
+        var consumption_label = JSON.parse(maingraph_consumptions);
+        var i = 0
+        {% for rooms in Room %}
+            var r = "room-cons-data_" + "{{ rooms.room_no}}";
+            console.log(r);
+            document.getElementsByClassName(r)[0].textContent = consumption_label[i] + " kWh";
+            i++;
+        {% endfor %}
+
+        var maingraph_rooms = "{{ name_rooms| safe }}";
+        maingraph_rooms = maingraph_rooms.replace(/'/g, '"');
+
+        var room_label = JSON.parse(maingraph_rooms)
+        console.log(maingraph_consumptions, maingraph_rooms);
+        var ctx = document.getElementById("room_energy_pie").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+
+            data: {
+                labels: room_label,
+                datasets: [{
+                    backgroundColor: [
+                        '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+                        '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+                        '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+                        '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+                        '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+                        '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+                        '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+                        '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+                        '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+                        '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'
+                    ],
+                    data: consumption_label
+                }]
+            },
+            options: {
+                legend: {
+                    display: true
+
+                }
+            }
+
+        });
+
+        var previousHr = []
+
+        function hourly_change() {
+            var room = [{% for x in Room %}'{{ x.room_no|escapejs }}',{% endfor %}];
+            for(var i = 0; i < room.length;i++){
+                jQuery.ajax({
+                    url: '/room?room_id='+room[i],
+                    success: function (data) {
+                        var val = Math.round(data[data.length-1]['Watts']/60 * 100) / 100;
+                        previousHr.push(val);
+                    },
+                 async: false
+                });
+
+            }
+
+            var index = 0
+
             {% for rooms in Room %}
-                var r = "room-cons-data_" + "{{ rooms.room_no}}";
-                console.log(r);
-                document.getElementsByClassName(r)[0].textContent = consumption_label[i] + " kWh";
-                i++;
+            var x = "hrChange_" + "{{ rooms.room_no }}";
+            var xi = "hrChange_i_" + "{{ rooms.room_no }}";
+            var diffPercent = ((consumption_label[index]- previousHr[index])/previousHr[index])*100;
+            if (diffPercent >0){
+                document.getElementsByClassName(x)[0].style.color = 'red';
+                document.getElementsByClassName(xi)[0].style.color = 'red';
+                document.getElementsByClassName(xi)[0].className = document.getElementsByClassName(xi)[0].className.replace( /(?:^|\s)fa-caret-down(?!\S)/g , ' ' );
+                document.getElementsByClassName(xi)[0].className += "fa-caret-up";
+            }
+            if (previousHr[index] == 0){
+                document.getElementsByClassName(xi)[0].className = document.getElementsByClassName(xi)[0].className.replace( /(?:^|\s)fa-caret-up(?!\S)/g , ' ' );
+                document.getElementsByClassName(xi)[0].className += "fa-caret";
+                document.getElementsByClassName(x)[0].style.color = 'blue';
+                document.getElementsByClassName(x)[0].textContent = "* NaN";
+            }else {
+                document.getElementsByClassName(x)[0].textContent = Math.round(Math.abs(diffPercent)) / 100 + "% ";
+            }
+            index++;
             {% endfor %}
 
-            var maingraph_rooms = "{{ name_rooms| safe }}";
-            maingraph_rooms = maingraph_rooms.replace(/'/g, '"');
+        }
 
-            var room_label = JSON.parse(maingraph_rooms)
-            console.log(maingraph_consumptions, maingraph_rooms);
-            var ctx = document.getElementById("room_energy_pie").getContext('2d');
+        hourly_change();
+
+        function weeklyComparison() {
+            var previousWeek = [];
+            var thisWeek = [];
+            var previousWeekTotal = 0;
+            var thisWeekTotal = 0;
+
+            jQuery.ajax({
+                    url: '/prev_thisweek',
+                    success: function (data) {
+                        for (let j = 0; j < data[0]['previous_week'].length; j++) {
+                            previousWeek.push(data[0]['previous_week'][j]['Watt']);
+                            previousWeekTotal += parseFloat(previousWeek[j]);
+                        }
+
+                        for (let j = 0; j < data[1]['current_week'].length; j++) {
+                            thisWeek.push(data[1]['current_week'][j]['Watt']);
+                            thisWeekTotal += parseFloat(thisWeek[j]);
+                        }
+                        console.log(previousWeek + " Total : " + previousWeekTotal);
+                        console.log(thisWeek + " Total : " + thisWeekTotal);
+                    },
+                 async: false
+                });
+
+            document.getElementById('curWeek').textContent = thisWeekTotal +" kWh";
+            document.getElementById('preWeek').textContent = previousWeekTotal +" kWh";
+
+            var ctx = document.getElementById('weekChart').getContext('2d');
             var myChart = new Chart(ctx, {
-                type: 'doughnut',
-
+                type: 'line',
                 data: {
-                    labels: room_label,
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
-                        backgroundColor: [
-                            '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
-                            '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
-                            '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
-                            '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-                            '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
-                            '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
-                            '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
-                            '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
-                            '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
-                            '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'
-                        ],
-                        data: consumption_label
+                        label: 'Current Week',
+                        data: thisWeek,
+                        backgroundColor: "rgba(89, 105, 255,0.5)",
+                        borderColor: "rgba(89, 105, 255,0.7)",
+                        borderWidth: 2
+                    }, {
+                        label: 'Previous Week',
+                        data: previousWeek,
+                        backgroundColor: "rgba(255, 64, 123,0.5)",
+                        borderColor: "rgba(255, 64, 123,0.7)",
+                        borderWidth: 2
                     }]
                 },
                 options: {
                     legend: {
-                        display: true
-
-                    }
-                }
-
-            });
-
-            var previousHr = []
-
-            function hourly_change() {
-                var room = [{% for x in Room %}'{{ x.room_no|escapejs }}',{% endfor %}];
-                for(var i = 0; i < room.length;i++){
-                    jQuery.ajax({
-                        url: '/room?room_id='+room[i],
-                        success: function (data) {
-                            var val = Math.round(data[data.length-1]['Watts']/60 * 100) / 100;
-                            previousHr.push(val);
-                        },
-                     async: false
-                    });
-
-                }
-
-                var index = 0
-
-                {% for rooms in Room %}
-                var x = "hrChange_" + "{{ rooms.room_no }}";
-                var xi = "hrChange_i_" + "{{ rooms.room_no }}";
-                var diffPercent = ((consumption_label[index]- previousHr[index])/previousHr[index])*100;
-                if (diffPercent >0){
-                    document.getElementsByClassName(x)[0].style.color = 'red';
-                    document.getElementsByClassName(xi)[0].style.color = 'red';
-                    document.getElementsByClassName(xi)[0].className = document.getElementsByClassName(xi)[0].className.replace( /(?:^|\s)fa-caret-up(?!\S)/g , ' ' );
-                    document.getElementsByClassName(xi)[0].className += "fa-caret-down";
-                }
-                if (previousHr[index] == 0){
-                    document.getElementsByClassName(xi)[0].className = document.getElementsByClassName(xi)[0].className.replace( /(?:^|\s)fa-caret-up(?!\S)/g , ' ' );
-                    document.getElementsByClassName(xi)[0].className += "fa-caret";
-                    document.getElementsByClassName(x)[0].style.color = 'blue';
-                    document.getElementsByClassName(x)[0].textContent = "* Value not available";
-                }else {
-                    document.getElementsByClassName(x)[0].textContent = Math.round(Math.abs(diffPercent)) / 100 + "% ";
-                }
-                index++;
-                {% endfor %}
-
-            }
-
-            hourly_change();
-
-            function weeklyComparison() {
-                var previousWeek = [];
-                var thisWeek = [];
-                var previousWeekTotal = 0;
-                var thisWeekTotal = 0;
-
-                jQuery.ajax({
-                        url: '/prev_thisweek',
-                        success: function (data) {
-                            for (let j = 0; j < data[0]['previous_week'].length; j++) {
-                                previousWeek.push(data[0]['previous_week'][j]['Watt']);
-                                previousWeekTotal += parseFloat(previousWeek[j]);
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            fontColor: '#71748d',
+                            fontFamily: 'Circular Std Book',
+                            fontSize: 14,
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                // Include a dollar sign in the ticks
+                                callback: function (value, index, values) {
+                                    return '$' + value;
+                                }
                             }
-
-                            for (let j = 0; j < data[1]['current_week'].length; j++) {
-                                thisWeek.push(data[1]['current_week'][j]['Watt']);
-                                thisWeekTotal += parseFloat(thisWeek[j]);
-                            }
-                            console.log(previousWeek + " Total : " + previousWeekTotal);
-                            console.log(thisWeek + " Total : " + thisWeekTotal);
-                        },
-                     async: false
-                    });
-
-                document.getElementById('curWeek').textContent = thisWeekTotal +" kWh";
-                document.getElementById('preWeek').textContent = previousWeekTotal +" kWh";
-
-                var ctx = document.getElementById('weekChart').getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        datasets: [{
-                            label: 'Current Week',
-                            data: thisWeek,
-                            backgroundColor: "rgba(89, 105, 255,0.5)",
-                            borderColor: "rgba(89, 105, 255,0.7)",
-                            borderWidth: 2
-                        }, {
-                            label: 'Previous Week',
-                            data: previousWeek,
-                            backgroundColor: "rgba(255, 64, 123,0.5)",
-                            borderColor: "rgba(255, 64, 123,0.7)",
-                            borderWidth: 2
                         }]
                     },
-                    options: {
-                        legend: {
-                            display: true,
-                            position: 'bottom',
-                            labels: {
-                                fontColor: '#71748d',
-                                fontFamily: 'Circular Std Book',
+
+                    scales: {
+                        xAxes: [{
+                            ticks: {
                                 fontSize: 14,
+                                fontFamily: 'Circular Std Book',
+                                fontColor: '#71748d',
                             }
-                        },
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    // Include a dollar sign in the ticks
-                                    callback: function (value, index, values) {
-                                        return '$' + value;
-                                    }
-                                }
-                            }]
-                        },
-
-                        scales: {
-                            xAxes: [{
-                                ticks: {
-                                    fontSize: 14,
-                                    fontFamily: 'Circular Std Book',
-                                    fontColor: '#71748d',
-                                }
-                            }],
-                            yAxes: [{
-                                ticks: {
-                                    fontSize: 14,
-                                    fontFamily: 'Circular Std Book',
-                                    fontColor: '#71748d',
-                                }
-                            }]
-                        }
-
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                fontSize: 14,
+                                fontFamily: 'Circular Std Book',
+                                fontColor: '#71748d',
+                            }
+                        }]
                     }
-                });
-            }
 
-            weeklyComparison();
+                }
+            });
+        }
+
+        weeklyComparison();
 
 
-        });
+    });
     </script>
 {% endblock %}
