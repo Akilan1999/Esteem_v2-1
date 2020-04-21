@@ -1,12 +1,92 @@
 import flask
 from flask import jsonify
 
-app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+application = flask.Flask(__name__)
+application.config["DEBUG"] = True
 
 # Create some test data for our catalog in the form of a list of dictionaries.
 
 Devices = [
+{
+        'DeviceName': 'LightPanel1',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.08,
+        'CurConsp': 0.08,
+        'status': 'on',
+        'ip_address': '127.0.0.200'
+    },
+{
+        'DeviceName': 'LightPanel2',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.081,
+        'CurConsp': 0.081,
+        'status': 'on',
+        'ip_address': '127.0.0.201'
+    },
+{
+        'DeviceName': 'LightPanel3',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.08,
+        'CurConsp': 0.08,
+        'status': 'on',
+        'ip_address': '127.0.0.202'
+    },
+{
+        'DeviceName': 'LightPanel4',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.08,
+        'CurConsp': 0.08,
+        'status': 'on',
+        'ip_address': '127.0.0.203'
+    },
+{
+        'DeviceName': 'LightPanel5',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.08,
+        'CurConsp': 0.08,
+        'status': 'on',
+        'ip_address': '127.0.0.204'
+    },
+{
+        'DeviceName': 'LightPanel6',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.1,
+        'CurConsp': 0.1,
+        'status': 'on',
+        'ip_address': '127.0.0.205'
+    },
+{
+        'DeviceName': 'LightPanel7',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.06,
+        'CurConsp': 0.06,
+        'status': 'on',
+        'ip_address': '127.0.0.206'
+    },
+    {
+        'DeviceName': 'LedBulb1',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.03,
+        'CurConsp': 0.03,
+        'status': 'on',
+        'ip_address': '127.0.0.210'
+    },
+{
+        'DeviceName': 'LedBulb2',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.03,
+        'CurConsp': 0.03,
+        'status': 'on',
+        'ip_address': '127.0.0.211'
+    },
+{
+        'DeviceName': 'LedBulb3',
+        'DeviceModel': 'Amazing Lights',
+        'ElecConsp': 0.03,
+        'CurConsp': 0.03,
+        'status': 'on',
+        'ip_address': '127.0.0.212'
+    },
     {
         'DeviceName': 'Lamp1',
         'DeviceModel': 'Amazing Lights',
@@ -242,7 +322,7 @@ Devices = [
 
 
 # Used to turn on and off any device
-@app.route('/api/changestatus/<string:device_id>', methods=['GET'])
+@application.route('/api/changestatus/<string:device_id>', methods=['GET'])
 def api_status(device_id):
     get_device = next(item for item in Devices if item["DeviceName"] == device_id)
 
@@ -254,9 +334,9 @@ def api_status(device_id):
     return jsonify('No device exsists with this id')
 
 
-@app.route('/api/alldevicesconsumption/', methods=['GET'])
+@application.route('/api/alldevicesconsumption/', methods=['GET'])
 def total_consumption():
     return jsonify(Devices)
 
 
-app.run()
+application.run()
