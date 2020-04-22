@@ -4,9 +4,12 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from Home.models import room, plugs, plug_electricity_consumption, energy_generation, energy_mode, battery, \
-    power_transaction, power_generation
+    power_transaction, power_generation, leaderboard, user_ranking
+from django.contrib.auth.models import User
 import requests
 import datetime
+import pytz
+
 
 
 def get_api_results(request=None):
@@ -18,6 +21,64 @@ def get_api_results(request=None):
         results = []
 
     return results
+
+## To add leaderboard information
+def leaderboard_info(stat,plug_id,user_id,request=None):
+    if stat == True:
+          leaderboard.objects.create(plug_no=plugs.objects.get(plug_name=plug_id),user_id=User.objects.get(username=str(user_id)))
+    else:
+          #Init UTC
+          utc = pytz.UTC
+
+          try:
+             l = leaderboard.objects.get(plug_no=plugs.objects.get(plug_name=plug_id),end_time_stamp=None)
+             l.end_time_stamp = datetime.datetime.now()
+             l.save()
+             #Get the total Kw used
+             try:
+                 results = requests.get("http://127.0.0.1:5000/api/alldevicesconsumption/").json()
+                 Watt = 0
+                 for i in results:
+                     if i["DeviceName"] == plug_id:
+                         Watt = i["CurConsp"]
+                         break
+                 #time diffrences
+                 diff = datetime.datetime.now() - l.start_time_stamp.replace(tzinfo=None)
+                 duration_in_s = diff.total_seconds()
+                 minutes = divmod(duration_in_s, 60)[0]        # Seconds in a minute = 60
+                 print(datetime.datetime.now())
+                 print(l.start_time_stamp.replace(tzinfo=None))
+                 seconds = duration_in_s - 14400
+                 print(seconds)
+
+                 Total_pow_used = (0.04 * seconds)/60
+
+                 print(Total_pow_used)
+
+
+                 try:
+                    u = user_ranking.objects.get(user_id=l.user_id)
+                    u.total_KwH = float(u.total_KwH) + Total_pow_used
+                    u.save()
+                 except user_ranking.DoesNotExist:
+                    user_ranking.objects.create(user_id=l.user_id,total_KwH=Total_pow_used)
+
+             except requests.exceptions.ConnectionError:
+                 if request:
+                     messages.error(request, "Sample server api off")
+
+          except leaderboard.DoesNotExist:
+            if request:
+               messages.error(request, "This device is turned on before this update")
+
+
+def user_rankings():
+    return_arr = []
+    user = list(user_ranking.objects.all().order_by('total_KwH'))
+    for i in range(len(user)):
+        return_arr.append({"rank":(i+1),"username":str(user[i].user_id.username),"Kw":str(user[i].total_KwH)})
+
+    return return_arr
 
 
 class BackgroundClass:
@@ -409,9 +470,10 @@ class HomePage(TemplateView):
             else:
                 print("No power source connected")
 
+
         return render(request, self.template_name,
                       {"Room": room.objects.all(), "name_rooms": room_names, "consumption_rooms": room_consumptions,
-                       "Battery": batteries, "Solarpanel": solarpanels, "Grid": grids},)
+                       "Battery": batteries, "Solarpanel": solarpanels, "Grid": grids,"User_ranking":user_rankings()},)
 
     def post(self, request, *args, **kwargs):
         if 'remove_room' in request.POST:
@@ -485,6 +547,8 @@ class RoomPage(TemplateView):
 
     def post(self, request, *args, **kwargs):
 
+        user = request.user
+
         if 'new_device' in request.POST:
             api_devices_list = get_api_results()
             # Using generator, get the item from the list that matches the IP provided from front-end.
@@ -508,6 +572,8 @@ class RoomPage(TemplateView):
             else:
                 plug_obj.status = True
             # plug_obj.status = True if plug_obj.status else False
+            #Adding to the leaderboard
+            leaderboard_info(plug_obj.status,values[1],request.user)
             plug_obj.save()
 
         if 'add_device' in request.POST:
@@ -791,3 +857,7 @@ class RoomsWeekly(TemplateView):
                     m -= 1
 
         return JsonResponse(return_data, safe=False)
+
+
+
+# Code for leaderboard to turn on or off a device

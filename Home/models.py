@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -46,7 +47,19 @@ class power_transaction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
-class power_generation:
+class power_generation(models.Model):
     e_id = models.ForeignKey(energy_generation, default=1, on_delete=models.CASCADE)
     current_power = models.DecimalField(max_digits=20, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+#Storing leaderborad for user
+class leaderboard(models.Model):
+    entry_no = models.AutoField(primary_key=True)
+    plug_no = models.ForeignKey(plugs, default=1,on_delete=models.CASCADE)
+    start_time_stamp = models.DateTimeField(auto_now_add=True)
+    end_time_stamp = models.DateTimeField(null=True, default=None)
+    user_id = models.ForeignKey(User, default=1,on_delete=models.CASCADE)
+
+class user_ranking(models.Model):
+    user_id = models.ForeignKey(User, default=1,on_delete=models.CASCADE)
+    total_KwH = models.DecimalField(max_digits=20, decimal_places=2)
