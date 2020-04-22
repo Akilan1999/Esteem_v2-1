@@ -34,10 +34,10 @@
                             </div>
                             <div class="card-body">
                                 <div class="metric-value d-inline-block">
-                                    <h1 class="room-cons-data_{{ room.room_no }} mb-1 text-primary">0.0 </h1>
+                                    <h1 class="room-cons-data_{{ room.room_no }} mb-1 text-primary" data-toggle="tooltip" title="Current consumption of the room" data-placement="bottom">0.0 </h1>
                                 </div>
                                 <div class="metric-label d-inline-block float-right text-success">
-                                    <i class=" hrChange_i_{{ room.room_no }} fa fa-fw fa-caret-down"></i><span class="hrChange_{{ room.room_no }}">__% </span>
+                                    <i class=" hrChange_i_{{ room.room_no }} fa fa-fw fa-caret-down"></i><span class="hrChange_{{ room.room_no }}" data-toggle="tooltip" title="Percentage increase/decrease as compared to the previous hour" data-placement="bottom">__% </span>
                                 </div>
                             </div>
                             <div id="energy_consumption_{{ rooms.room_no }}"></div>
@@ -537,8 +537,6 @@
     </div>
 
     <script>
-{#        {% load custom_tags %}#}
-
     var battery = {{ Battery.0.BatteryPercentage | safe }};
     var solarpanel = {{ Solarpanel | safe }};
     var grid = {{ Grid | safe }};
@@ -548,13 +546,16 @@
 
 
     $(document).ready(function () {
+
+        $('[data-toggle="tooltip"]').tooltip();
+
         var maingraph_consumptions = "{{ consumption_rooms }}";
         var consumption_label = JSON.parse(maingraph_consumptions);
         var i = 0
         {% for rooms in Room %}
             var r = "room-cons-data_" + "{{ rooms.room_no}}";
             console.log(r);
-            document.getElementsByClassName(r)[0].textContent = consumption_label[i] + " kWh";
+            document.getElementsByClassName(r)[0].textContent = consumption_label[i] + " kW";
             i++;
         {% endfor %}
 
@@ -609,12 +610,17 @@
 
             }
 
+            console.log("previous hr: " + previousHr)
+            console.log("current    : " + consumption_label)
+
+
             var index = 0
 
             {% for rooms in Room %}
             var x = "hrChange_" + "{{ rooms.room_no }}";
             var xi = "hrChange_i_" + "{{ rooms.room_no }}";
             var diffPercent = ((consumption_label[index]- previousHr[index])/previousHr[index])*100;
+            console.log(diffPercent)
             if (diffPercent >0){
                 document.getElementsByClassName(x)[0].style.color = 'red';
                 document.getElementsByClassName(xi)[0].style.color = 'red';
@@ -627,7 +633,7 @@
                 document.getElementsByClassName(x)[0].style.color = 'blue';
                 document.getElementsByClassName(x)[0].textContent = "* NaN";
             }else {
-                document.getElementsByClassName(x)[0].textContent = Math.round(Math.abs(diffPercent)) / 100 + "% ";
+                document.getElementsByClassName(x)[0].textContent = Number(Math.round(parseFloat(diffPercent + 'e' + 2)) + 'e-' + 2).toFixed(2) + "% ";
             }
             index++;
             {% endfor %}

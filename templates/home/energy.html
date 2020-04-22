@@ -4,9 +4,11 @@
 {% block page_header_name %}Energy Generation{% endblock %}
 {% block pagename %}energy_generation{% endblock %}
 {% block content %}
-    <div class="row justify-content-center">
-        <div class="container">
-            <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+    <div class="container-fluid">
+        <div class="card">
+            <h5 class="card-header">Charts</h5>
+            <div>
+                <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
                     <button onclick="energyChart_live()" class="btn btn-primary ">
                         <input type="radio" name="options" id="option1" checked>Live
                     </button>
@@ -16,9 +18,10 @@
 {#                    <button class="btn btn-primary">#}
 {#                        <input type="radio" name="options" id="option3"> Daily#}
 {#                    </button>#}
+                </div>
             </div>
-            <div>
-                <canvas id="mainChart" height="100px" width="200px"></canvas>
+            <div class="card-body">
+                <div id="c3chart_area"><canvas id="mainChart" width="280" height="280"></canvas></div>
             </div>
         </div>
     </div>
@@ -190,6 +193,7 @@
                 }]
             },
             options: {
+                maintainAspectRatio: false,
                 legend: {
                     display: true
 
@@ -271,6 +275,7 @@
                 datasets: datasets
             },
             options: {
+                maintainAspectRatio: false,
                 scales: {
                     yAxes: [{
                         ticks: {
