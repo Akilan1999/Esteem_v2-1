@@ -49,11 +49,8 @@ def leaderboard_info(stat,plug_id,user_id,request=None):
                  print(datetime.datetime.now())
                  print(l.start_time_stamp.replace(tzinfo=None))
                  seconds = duration_in_s - 14400
-                 print(seconds)
 
                  Total_pow_used = (0.04 * seconds)/60
-
-                 print(Total_pow_used)
 
 
                  try:
@@ -220,7 +217,7 @@ class BackgroundClass:
                 if j["type"] == "Battery":
                     if j["BatteryPercentage"] > 30 and j[
                         'RemainingCapacity'] >= energy_taken and energy_taken >= battery_wire_capacity:
-                        power_transaction.objects.create(e_id=e_name, transfer=battery_wire_capacity)
+                        power_transaction.objects.create(e_id=energy_generation.objects.get(name=j["SourceName"]), transfer=battery_wire_capacity)
                         # Battery Pulled from energy sources
                         requests.get(
                             "http://127.0.0.1:12345/api/batterydischarge/" + str(float(battery_wire_capacity))).json()
@@ -228,13 +225,13 @@ class BackgroundClass:
                         print(energy_taken)
                     elif j["BatteryPercentage"] > 30 and j[
                         'RemainingCapacity'] >= energy_taken and energy_taken <= battery_wire_capacity:
-                        power_transaction.objects.create(e_id=e_name, transfer=energy_taken)
+                        power_transaction.objects.create(e_id=energy_generation.objects.get(name=j["SourceName"]),, transfer=energy_taken)
                         # Battery Pulled from energy sources
                         requests.get("http://127.0.0.1:12345/api/batterydischarge/" + str(float(energy_taken))).json()
                         energy_taken -= energy_taken
                         print(energy_taken)
                     else:
-                        power_transaction.objects.create(e_id=e_name, transfer=-abs(battery_wire_capacity))
+                        power_transaction.objects.create(e_id=energy_generation.objects.get(name=j["SourceName"]), transfer=-abs(battery_wire_capacity))
                         # Battery Pulled from energy sources
                         requests.get("http://127.0.0.1:12345/api/batterycharge/" + str(float(energy_taken))).json()
                         energy_taken += energy_taken
