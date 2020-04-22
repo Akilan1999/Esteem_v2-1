@@ -11,7 +11,6 @@ import datetime
 import pytz
 
 
-
 def get_api_results(request=None):
     try:
         results = requests.get("http://127.0.0.1:5000/api/alldevicesconsumption/").json()
@@ -22,58 +21,59 @@ def get_api_results(request=None):
 
     return results
 
+
 ## To add leaderboard information
-def leaderboard_info(stat,plug_id,user_id,request=None):
+def leaderboard_info(stat, plug_id, user_id, request=None):
     if stat == True:
-          leaderboard.objects.create(plug_no=plugs.objects.get(plug_name=plug_id),user_id=User.objects.get(username=str(user_id)))
+        leaderboard.objects.create(plug_no=plugs.objects.get(plug_name=plug_id),
+                                   user_id=User.objects.get(username=str(user_id)))
     else:
-          #Init UTC
-          utc = pytz.UTC
+        # Init UTC
+        utc = pytz.UTC
 
-          try:
-             l = leaderboard.objects.get(plug_no=plugs.objects.get(plug_name=plug_id),end_time_stamp=None)
-             l.end_time_stamp = datetime.datetime.now()
-             l.save()
-             #Get the total Kw used
-             try:
-                 results = requests.get("http://127.0.0.1:5000/api/alldevicesconsumption/").json()
-                 Watt = 0
-                 for i in results:
-                     if i["DeviceName"] == plug_id:
-                         Watt = i["CurConsp"]
-                         break
-                 #time diffrences
-                 diff = datetime.datetime.now() - l.start_time_stamp.replace(tzinfo=None)
-                 duration_in_s = diff.total_seconds()
-                 minutes = divmod(duration_in_s, 60)[0]        # Seconds in a minute = 60
-                 print(datetime.datetime.now())
-                 print(l.start_time_stamp.replace(tzinfo=None))
-                 seconds = duration_in_s - 14400
+        try:
+            l = leaderboard.objects.get(plug_no=plugs.objects.get(plug_name=plug_id), end_time_stamp=None)
+            l.end_time_stamp = datetime.datetime.now()
+            l.save()
+            # Get the total Kw used
+            try:
+                results = requests.get("http://127.0.0.1:5000/api/alldevicesconsumption/").json()
+                Watt = 0
+                for i in results:
+                    if i["DeviceName"] == plug_id:
+                        Watt = i["CurConsp"]
+                        break
+                # time diffrences
+                diff = datetime.datetime.now() - l.start_time_stamp.replace(tzinfo=None)
+                duration_in_s = diff.total_seconds()
+                minutes = divmod(duration_in_s, 60)[0]  # Seconds in a minute = 60
+                print(datetime.datetime.now())
+                print(l.start_time_stamp.replace(tzinfo=None))
+                seconds = duration_in_s - 14400
 
-                 Total_pow_used = (0.04 * seconds)/60
+                Total_pow_used = (0.04 * seconds) / 60
 
-
-                 try:
+                try:
                     u = user_ranking.objects.get(user_id=l.user_id)
                     u.total_KwH = float(u.total_KwH) + Total_pow_used
                     u.save()
-                 except user_ranking.DoesNotExist:
-                    user_ranking.objects.create(user_id=l.user_id,total_KwH=Total_pow_used)
+                except user_ranking.DoesNotExist:
+                    user_ranking.objects.create(user_id=l.user_id, total_KwH=Total_pow_used)
 
-             except requests.exceptions.ConnectionError:
-                 if request:
-                     messages.error(request, "Sample server api off")
+            except requests.exceptions.ConnectionError:
+                if request:
+                    messages.error(request, "Sample server api off")
 
-          except leaderboard.DoesNotExist:
+        except leaderboard.DoesNotExist:
             if request:
-               messages.error(request, "This device is turned on before this update")
+                messages.error(request, "This device is turned on before this update")
 
 
 def user_rankings():
     return_arr = []
     user = list(user_ranking.objects.all().order_by('total_KwH'))
     for i in range(len(user)):
-        return_arr.append({"rank":(i+1),"username":str(user[i].user_id.username),"Kw":str(user[i].total_KwH)})
+        return_arr.append({"rank": (i + 1), "username": str(user[i].user_id.username), "Kw": str(user[i].total_KwH)})
 
     return return_arr
 
@@ -217,7 +217,8 @@ class BackgroundClass:
                 if j["type"] == "Battery":
                     if j["BatteryPercentage"] > 30 and j[
                         'RemainingCapacity'] >= energy_taken and energy_taken >= battery_wire_capacity:
-                        power_transaction.objects.create(e_id=energy_generation.objects.get(name=j["SourceName"]), transfer=battery_wire_capacity)
+                        power_transaction.objects.create(e_id=energy_generation.objects.get(name=j["SourceName"]),
+                                                         transfer=battery_wire_capacity)
                         # Battery Pulled from energy sources
                         requests.get(
                             "http://127.0.0.1:12345/api/batterydischarge/" + str(float(battery_wire_capacity))).json()
@@ -225,13 +226,15 @@ class BackgroundClass:
                         print(energy_taken)
                     elif j["BatteryPercentage"] > 30 and j[
                         'RemainingCapacity'] >= energy_taken and energy_taken <= battery_wire_capacity:
-                        power_transaction.objects.create(e_id=energy_generation.objects.get(name=j["SourceName"]),, transfer=energy_taken)
+                        power_transaction.objects.create(e_id=energy_generation.objects.get(name=j["SourceName"]),
+                                                         transfer=energy_taken)
                         # Battery Pulled from energy sources
                         requests.get("http://127.0.0.1:12345/api/batterydischarge/" + str(float(energy_taken))).json()
                         energy_taken -= energy_taken
                         print(energy_taken)
                     else:
-                        power_transaction.objects.create(e_id=energy_generation.objects.get(name=j["SourceName"]), transfer=-abs(battery_wire_capacity))
+                        power_transaction.objects.create(e_id=energy_generation.objects.get(name=j["SourceName"]),
+                                                         transfer=-abs(battery_wire_capacity))
                         # Battery Pulled from energy sources
                         requests.get("http://127.0.0.1:12345/api/batterycharge/" + str(float(energy_taken))).json()
                         energy_taken += energy_taken
@@ -467,10 +470,10 @@ class HomePage(TemplateView):
             else:
                 print("No power source connected")
 
-
         return render(request, self.template_name,
                       {"Room": room.objects.all(), "name_rooms": room_names, "consumption_rooms": room_consumptions,
-                       "Battery": batteries, "Solarpanel": solarpanels, "Grid": grids,"User_ranking":user_rankings()},)
+                       "Battery": batteries, "Solarpanel": solarpanels, "Grid": grids,
+                       "User_ranking": user_rankings()}, )
 
     def post(self, request, *args, **kwargs):
         if 'remove_room' in request.POST:
@@ -569,8 +572,8 @@ class RoomPage(TemplateView):
             else:
                 plug_obj.status = True
             # plug_obj.status = True if plug_obj.status else False
-            #Adding to the leaderboard
-            leaderboard_info(plug_obj.status,values[1],request.user)
+            # Adding to the leaderboard
+            leaderboard_info(plug_obj.status, values[1], request.user)
             plug_obj.save()
 
         if 'add_device' in request.POST:
@@ -854,7 +857,5 @@ class RoomsWeekly(TemplateView):
                     m -= 1
 
         return JsonResponse(return_data, safe=False)
-
-
 
 # Code for leaderboard to turn on or off a device
