@@ -227,7 +227,7 @@
                     <h5 class="card-header">Consumption Leaderboard</h5>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-hover">
                                 <thead class="bg-light">
                                 <tr class="border-0">
                                     <th class="border-0">#</th>
@@ -244,9 +244,9 @@
 
                                     <td>{{ userData.rank }}</td>
                                     <td>{{ userData.username }}</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{ userData.Kw }}</td>
+                                    <td>{{ userData.first }}</td>
+                                    <td>{{ userData.last }}</td>
+                                    <td>{{ userData.Kw }} kW</td>
 
                                 </tr>
                                 {% endfor %}

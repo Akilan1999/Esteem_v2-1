@@ -73,7 +73,8 @@ def user_rankings():
     return_arr = []
     user = list(user_ranking.objects.all().order_by('total_KwH'))
     for i in range(len(user)):
-        return_arr.append({"rank": (i + 1), "username": str(user[i].user_id.username), "Kw": str(user[i].total_KwH)})
+        return_arr.append({"rank": (i + 1), "username": str(user[i].user_id.username), "Kw": str(user[i].total_KwH), "first": str(user[i].user_id.first_name), "last": str(user[i].user_id.last_name)
+                           ,"active": str(user[i].user_id.is_active)})
 
     return return_arr
 
